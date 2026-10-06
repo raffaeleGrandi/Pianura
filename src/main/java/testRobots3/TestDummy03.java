@@ -35,10 +35,9 @@ public class TestDummy03 extends RobotDummy {
 		System.out.println("EndLoop - Disable Unit");
 	}//end executeLoop	
 	
-	private void sleepSimTime(double st_val){		
-		//while(this.tsCounter)
-		try { Thread.sleep((long)(st_val * 1000)); } 
-		catch (InterruptedException e) { e.printStackTrace(); }		
+	private void sleepSimTime(double st_val){
+		// tempo simulato: rispetta pausa, passo singolo e velocità
+		sleepSim(st_val);
 	}//sleepTime	
 	
 }//end TestDummy

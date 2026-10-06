@@ -91,8 +91,8 @@ public class TestDummy04 extends RobotDummy {
 	}
 
 	private void sleepSimTime(double st_val){
-		try { Thread.sleep((long)(st_val * 1000)); }
-		catch (InterruptedException e) { e.printStackTrace(); }
+		// tempo simulato: rispetta pausa, passo singolo e velocità
+		sleepSim(st_val);
 	}
 
 }

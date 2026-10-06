@@ -22,7 +22,7 @@ The goal of this public release is to give students, researchers, and developers
 
 ## Requirements
 
-- Java 21 or later
+- A JDK, version 21 or later (25 LTS recommended), e.g. [Eclipse Temurin](https://adoptium.net/)
 - Gradle (wrapper included — no installation needed)
 
 ---
@@ -196,4 +196,4 @@ This project is licensed under the terms of the [LICENSE](LICENSE) file included
 
 ---
 
-*Originally developed at the University of Bologna, Department of Computer Science and Engineering.*
+*JUSE was developed independently by Raffaele Grandi, starting in 2008, as a support tool for his M.Sc. thesis on Particle Swarm Optimization for mobile robot swarms. It was later used in research and teaching activities at the University of Bologna and in other students' theses, but its code was never developed by or transferred to the University.*
