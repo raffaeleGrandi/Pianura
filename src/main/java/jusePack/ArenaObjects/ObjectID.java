@@ -11,7 +11,7 @@ public class ObjectID {
 	private int objIDnum;
 	private ArenaObjectType objType;
 	private Position objPos;
-	private Dimension objDim; //only for obstacles
+	private volatile double width, height;   // in celle, solo per gli ostacoli
 	private Color objColor;
 	
 	
@@ -19,7 +19,14 @@ public class ObjectID {
 		objType = objectType;
 		objColor = objectColor;
 		objPos = objectPosition;
-		objDim =objectDimension;		
+		if (objectDimension != null) { width = objectDimension.width; height = objectDimension.height; }
+	}
+
+	/** Ostacolo con dimensioni non intere (in celle). */
+	public ObjectID(ArenaObjectType objectType, Color objectColor, Position objectPosition, double widthCells, double heightCells){
+		this(objectType, objectColor, objectPosition, (Dimension) null);
+		width = widthCells;
+		height = heightCells;
 	}
 	
 	public synchronized int getIDnum(){return objIDnum;}
@@ -40,6 +47,16 @@ public class ObjectID {
 	
 	public Color getColor(){return objColor;}
 	
-	public Dimension getDim(){ return objDim;}	
+	/** Dimensioni arrotondate all'intero (compatibilità): per i valori esatti usare getWidth()/getHeight(). */
+	public Dimension getDim(){ return new Dimension((int) Math.round(width), (int) Math.round(height)); }
+
+	/** Larghezza in celle (asse x locale dell'ostacolo). */
+	public double getWidth(){ return width; }
+
+	/** Altezza in celle (asse y locale dell'ostacolo). */
+	public double getHeight(){ return height; }
+
+	/** Nuove dimensioni in celle (es. dal ridimensionamento con il mouse). */
+	public synchronized void setSize(double widthCells, double heightCells){ width = widthCells; height = heightCells; }
 	
 }//end class
