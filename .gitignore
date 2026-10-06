@@ -1,10 +1,12 @@
 # Claude Code
 .claude/
 
+# Private project wiki (not published)
+semantic-memory/
+
 # Gradle
 build/
 .gradle/
-gradle/wrapper/gradle-wrapper.jar
 
 # IDE
 .idea/
@@ -18,8 +20,13 @@ gradle/wrapper/gradle-wrapper.jar
 # Java
 *.class
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Python
+__pycache__/
+*.pyc

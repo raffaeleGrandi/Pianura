@@ -13,6 +13,7 @@ public class UnitObject extends ArenaObjectABS {
 	private CollisionHandler collHand;
 	private SensorArray bumpSensors;
 	private SensorArray irSensors;
+	private final jusePack.units.sensors.FloorSensorArray floorSensors = new jusePack.units.sensors.FloorSensorArray();
 	private double sensorRange;
 	private Position oldPos;
 
@@ -37,6 +38,9 @@ public class UnitObject extends ArenaObjectABS {
 	public SensorArray getIrSensors(){ return irSensors; }
 
 	public double getSensorRange(){ return sensorRange; }
+
+	/** Sensori ottici rivolti verso il pavimento. */
+	public jusePack.units.sensors.FloorSensorArray getFloorSensors(){ return floorSensors; }
 
 	public void setPos(Position newPos){ objectID.setPos(newPos);}
 

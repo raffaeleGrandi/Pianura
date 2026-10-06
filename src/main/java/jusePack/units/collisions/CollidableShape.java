@@ -21,4 +21,11 @@ public interface CollidableShape {
      */
     double rayIntersect(double ox, double oy, double dx, double dy, double maxDist);
 
+    /**
+     * Contorno della forma in pixel, nelle stesse coordinate usate per il ray casting.
+     * Serve per i test tra forme (es. ostacoli che si compenetrano) e, in prospettiva,
+     * per disegnare esattamente ciò che il simulatore usa per le collisioni.
+     */
+    java.awt.Shape outline();
+
 }

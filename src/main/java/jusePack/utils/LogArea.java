@@ -8,17 +8,24 @@ public class LogArea extends JTextArea{
 	
 	public LogArea(String initString){
 		super(initString);
-		setEditable(false);			
+		init();
 	}
 	
 	public LogArea(String initString, int row, int col){
 		super(initString,row,col);
-		setEditable(false);		
+		init();
+	}
+
+	/** Righe lunghe a capo sulle parole: niente barra orizzontale. */
+	private void init(){
+		setEditable(false);
+		setLineWrap(true);
+		setWrapStyleWord(true);
 	}
 	
 	public void addMSG(String msg){ 
 		if (clear){ setText(""); clear = false; }
-		append("\n"+msg);
+		append(getDocument().getLength() == 0 ? msg : "\n" + msg);
 		this.setCaretPosition(this.getDocument().getLength());		
 	}
 	

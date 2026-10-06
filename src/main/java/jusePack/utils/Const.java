@@ -22,9 +22,9 @@ public class Const {
 
 	public static final Dimension arenaDimension = new Dimension(arenaWidth, arenaHeight);
 	public static final Point guiFrameLoc = new Point(50,50);
-	public static final Dimension guiFrameDim = new Dimension(600,680);
+	public static final Dimension guiFrameDim = new Dimension(600,720);
 	public static final String guiFrameTitle = "Test - Juse Main Frame";
-	public static final int repaintTime = 40; // arena refresh time in ms
+	public static final int repaintTime = 16; // arena refresh time in ms (~60 fps)
 	public static final double auxGPanelScaleFactor = 0.5;
 	public static final Dimension auxGPanelDim = new Dimension((int)(arenaWidth*auxGPanelScaleFactor),(int)(arenaHeight*auxGPanelScaleFactor));
 	public static final Color collisionPanelColor = Color.LIGHT_GRAY;
@@ -43,7 +43,8 @@ public class Const {
 	public static final double sensorsCheckingRangeMin = 0.5; // in cells
 
 	public static boolean debugEnabled = false;
-	public static double timeSample = 0.1;
+	/** Passo della fisica in secondi di tempo simulato (100 Hz). */
+	public static final double physicsStep = 0.01;
 
 	/**************************utility method*****************************************************************/
 

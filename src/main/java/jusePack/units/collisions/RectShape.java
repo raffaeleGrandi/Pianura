@@ -14,6 +14,7 @@ public class RectShape implements CollidableShape {
     private final double cx, cy;  // centro in pixel
     private final double hw, hh;  // semi-larghezza e semi-altezza in pixel
     private final double cosA, sinA;  // cos(-angle), sin(-angle) per trasformazione inversa
+    private final double angle;
 
     /**
      * @param cx     centro X in pixel
@@ -29,6 +30,14 @@ public class RectShape implements CollidableShape {
         this.hh = height / 2.0;
         this.cosA = Math.cos(-angle);
         this.sinA = Math.sin(-angle);
+        this.angle = angle;
+    }
+
+    @Override
+    public java.awt.Shape outline() {
+        java.awt.geom.AffineTransform at = java.awt.geom.AffineTransform.getTranslateInstance(cx, cy);
+        at.rotate(angle);   // coordinate schermo: angolo positivo = orario, come i robot
+        return at.createTransformedShape(new java.awt.geom.Rectangle2D.Double(-hw, -hh, 2 * hw, 2 * hh));
     }
 
     @Override
@@ -72,8 +81,10 @@ public class RectShape implements CollidableShape {
         // La forma è completamente dietro al raggio
         if (tmax < 0) return -1;
 
-        // Origine dentro il rettangolo: intersezione immediata
-        if (tmin < 0) return (tmax <= maxDist) ? 0 : -1;
+        // Origine dentro il rettangolo: contatto immediato, qualunque sia la distanza del punto di uscita
+        // (prima veniva scartato se l'uscita era oltre maxDist: un robot col centro dentro un rettangolo
+        // grande risultava "libero" sia per i sensori sia per la validazione)
+        if (tmin < 0) return 0;
 
         return (tmin <= maxDist) ? tmin : -1;
     }
