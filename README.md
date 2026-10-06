@@ -1,6 +1,6 @@
 # JUSE — Java UniBot Simulation Environment
 
-JUSE is a lightweight, self-contained 2D simulator for **differential-drive mobile robots**, written entirely in Java. It was originally built as the software counterpart of UniBot, a real differential-drive robot co-developed at the University of Bologna, and has been used in robotics and AI courses and student theses since 2008.
+JUSE is a lightweight, self-contained 2D simulator for **differential-drive mobile robots**, written entirely in Java. It was born in 2008 as a support tool for the author's M.Sc. thesis on mobile robot swarms, and later became the simulator of the UniBot project at the University of Bologna, where it was used in Artificial Intelligence courses and in several student theses.
 
 The goal of this public release is to give students, researchers, and developers a **simple, hackable Java simulator** to prototype and test robot navigation algorithms — because very few maintained options of this kind exist today.
 
@@ -162,13 +162,15 @@ IR sensors return values from 0 (obstacle at contact distance) to 255 (no obstac
 
 ## Background
 
-JUSE was born in April 2008 as a simulation tool developed alongside Raffaele Grandi's M.Sc. thesis in Computer Science & Software Engineering at the **University of Bologna**. The thesis focused on coordinating mobile robot swarms using Particle Swarm Optimization — JUSE was the environment in which those algorithms were designed and tested before running on real hardware.
+JUSE was born in April 2008 as a simulation tool developed alongside Raffaele Grandi's M.Sc. thesis in Computer Science & Software Engineering at the **University of Bologna**. The thesis focused on coordinating mobile robot swarms using Particle Swarm Optimization — JUSE was the environment in which those algorithms were designed and tested. All of the original code was written by Raffaele Grandi, who has always been the project's only contributor.
 
-The key design decision — modeling each simulated robot as an independent agent in the Multi-Agent Systems sense, with separate layers of computation from logical to physical — made JUSE flexible enough to be adopted in university courses on Robotics and Artificial Intelligence, and as a platform for several student theses.
+The key design decision — modeling each simulated robot as an independent agent in the Multi-Agent Systems sense, with separate layers of computation from logical to physical — made JUSE flexible and easy to extend with new robot behaviours.
 
-Development continued during Raffaele's PhD (2010–2013) in Automation & Operational Research, where JUSE supported research on multi-robot coordination, swarm intelligence, and consensus-based control. During this period, **UniBot** — a physical differential-drive robot co-developed in the lab — became JUSE's real-world counterpart, and the two platforms were used together for teaching and research.
+When Raffaele started his PhD (2010–2013) in Automation & Operational Research at the University of Bologna, the lab was building **UniBot**, a physical differential-drive robot, and needed a simulator as its software counterpart. JUSE took that role: the idea was to design algorithms in the simulator and then replace it with the real robot, driven over UDP — an idea that today's UDP remote control (see [`clients/python`](clients/python)) brings back. Several students used JUSE for their theses and in Artificial Intelligence courses, since no other simulator, and no physical robot, was available to them.
 
-This public release brings the codebase up to modern Java (21), replaces the original pixel-based collision detection with a clean geometric ray casting model, and opens the project to external contributors.
+UniBot was never completed in time, and JUSE became the only tool for developing mobile-robot algorithms outside MATLAB. This made it especially welcome in the Computer Science degree course: MATLAB belonged to the Control Engineering curriculum, while Computer Science students knew Java well and could use JUSE without any extra effort.
+
+This public release brings the codebase up to modern Java (21 or later), replaces the original pixel-based collision detection with a clean geometric ray casting model, and opens the project to external contributors.
 
 If you use JUSE in academic work, you may reference the following:
 
@@ -183,7 +185,6 @@ If you use JUSE in academic work, you may reference the following:
 Contributions are welcome. If you find a bug, have a feature idea, or want to improve the documentation, open an issue or submit a pull request.
 
 Some known areas for future work:
-- Robot-to-robot detection in the geometric collision model
 - Configurable sensor count and layout
 - Scenario loading from file (JSON/XML)
 - Headless mode for batch experiments
@@ -196,4 +197,4 @@ This project is licensed under the terms of the [LICENSE](LICENSE) file included
 
 ---
 
-*JUSE was developed independently by Raffaele Grandi, starting in 2008, as a support tool for his M.Sc. thesis on Particle Swarm Optimization for mobile robot swarms. It was later used in research and teaching activities at the University of Bologna and in other students' theses, but its code was never developed by or transferred to the University.*
+*JUSE was developed independently by Raffaele Grandi, its sole author, starting in 2008, as a support tool for his M.Sc. thesis on Particle Swarm Optimization for mobile robot swarms. It was later used in research and teaching activities at the University of Bologna and in other students' theses, but its code was never developed by or transferred to the University.*
