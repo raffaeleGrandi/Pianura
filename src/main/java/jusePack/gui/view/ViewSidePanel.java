@@ -59,6 +59,8 @@ public class ViewSidePanel extends JPanel {
         this(view, options, scenarioFloor, floorChanger, arenaInfo, null, null);
     }
 
+    private final javax.swing.JToggleButton followButton = new javax.swing.JToggleButton("Follow");
+
     /**
      * @param network          radio network (null: no communication section)
      * @param openConnectivity opens the connectivity window
@@ -85,7 +87,8 @@ public class ViewSidePanel extends JPanel {
         JPanel vista = section("View");
         vista.add(zoomButtons);
         vista.add(zoomLabel);
-        vista.add(small("Drag to pan · wheel to zoom"));
+        vista.add(small("Drag to pan · wheel to zoom · W A S D to fly over the map (Shift = faster) · Home = fit"));
+        vista.add(layer("Edge scrolling", () -> options.edgeScroll, v -> options.edgeScroll = v));
         add(vista);
 
         // --- Livelli ---
@@ -148,6 +151,15 @@ public class ViewSidePanel extends JPanel {
         zoomLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         robotInfo.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         robot.add(robotInfo);
+        followButton.setFocusable(false);
+        followButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+        followButton.setToolTipText("Keep the selected robot at the center of the view (also: double click on the robot)");
+        followButton.addActionListener(e -> {
+            jusePack.units.RobotUnit sel = view.getSelected();
+            view.follow(followButton.isSelected() ? sel : null);
+            refresh();
+        });
+        robot.add(followButton);
         add(robot);
 
         add(Box.createVerticalGlue());
@@ -167,6 +179,11 @@ public class ViewSidePanel extends JPanel {
         if (dist != null && !dist.getValueIsAdjusting() && dist.getValue() != want) dist.setValue(want);
         layerBoxes.forEach((box, value) -> { if (box.isSelected() != value.getAsBoolean()) box.setSelected(value.getAsBoolean()); });
         zoomLabel.setText(String.format(Locale.ROOT, "Zoom %.0f%%", view.getTransform().getScale() * 100));
+        jusePack.units.RobotUnit fol = view.getFollowed(), sel = view.getSelected();
+        boolean following = fol != null && fol == sel;
+        if (followButton.isSelected() != following) followButton.setSelected(following);
+        followButton.setEnabled(sel != null);
+        followButton.setText(following ? "Following #" + fol.getIDnum() : "Follow");
         if (network != null) {
             jusePack.comm.ConnectivityGraph g = network.getGraph();
             jusePack.comm.CommNetwork.Stats s = network.getStats();

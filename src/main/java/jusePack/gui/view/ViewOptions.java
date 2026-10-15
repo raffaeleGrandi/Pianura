@@ -21,6 +21,8 @@ public final class ViewOptions {
     public volatile boolean commLinks = false;
     /** Transmission range of each robot. */
     public volatile boolean commRange = false;
+    /** The view scrolls when the pointer rests near its border (like strategy games). */
+    public volatile boolean edgeScroll = true;
     /** Griglia delle celle sopra il pavimento. */
     public volatile boolean grid = false;
 }

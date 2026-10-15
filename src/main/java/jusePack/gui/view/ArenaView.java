@@ -59,7 +59,10 @@ import jusePack.utils.Position;
  * dagli stessi contorni delle collisioni), livelli opzionali e robot (rototraslazione).
  *
  * Mouse — sempre: rotellina = zoom attorno al cursore · trascinamento sul vuoto = spostamento
- * della vista · clic = selezione · doppio clic sul vuoto = adatta alla finestra.
+ * della vista · clic = selezione · doppio clic sul vuoto = adatta alla finestra · doppio clic su
+ * un robot = seguilo · puntatore fermo vicino al bordo = scorrimento (se attivo nelle opzioni).
+ * Tastiera: W A S D = vola sulla mappa (Maiusc = più veloce) · + / − = zoom · Home = adatta.
+ * La vista non si allontana dalla mappa: il suo centro resta sempre dentro l'arena.
  * Mouse — prima dell'avvio o in pausa: trascinare un ostacolo o un robot lo sposta
  * (Ctrl/Cmd = aggancio a mezza cella); Maiusc+rotellina oppure Q/E lo ruotano di 5°;
  * le maniglie dell'ostacolo selezionato lo ridimensionano tenendo fermo il lato opposto.
@@ -109,6 +112,17 @@ public class ArenaView extends JPanel {
     private RobotUnit selected;
     private int selectedObstacle = -1;
     private Consumer<RobotUnit> selectionListener = r -> {};
+
+    // navigazione: tasti tenuti premuti, puntatore al bordo, robot seguito
+    private static final double EDGE_MARGIN_PX = 18;
+    private static final long EDGE_DWELL_NS = 300_000_000L;   // il puntatore deve fermarsi al bordo
+    private final boolean[] panKeys = new boolean[4];         // su, sinistra, giù, destra
+    private boolean panFast;
+    private Point2D edgePointer;
+    private long edgeSince;
+    private volatile RobotUnit followed;
+    private long lastNavTick;
+    private final javax.swing.Timer navTimer = new javax.swing.Timer(16, e -> navTick());
     private Runnable viewListener = () -> {};
 
     /**
@@ -184,6 +198,7 @@ public class ArenaView extends JPanel {
         if (getWidth() <= 0 || getHeight() <= 0) return;
         vt.fit(worldBounds(), getWidth(), getHeight(), FIT_PADDING);
         autoFit = true;
+        followed = null;
         viewListener.run();
         repaint();
     }
@@ -191,6 +206,7 @@ public class ArenaView extends JPanel {
     /** Zoom attorno al centro della vista. */
     public void zoom(double factor) {
         vt.zoomAt(factor, getWidth() / 2.0, getHeight() / 2.0);
+        clampView();
         autoFit = false;
         viewListener.run();
         repaint();
@@ -383,6 +399,7 @@ public class ArenaView extends JPanel {
             private ResizeStart resizing;     // ridimensionamento in corso con una maniglia
 
             @Override public void mousePressed(MouseEvent e) {
+                edgePointer = null;
                 last = e.getPoint();
                 dragged = false;
                 dragTarget = null;
@@ -421,6 +438,8 @@ public class ArenaView extends JPanel {
                     notifyChanged(false);
                 } else {
                     vt.pan(e.getX() - last.getX(), e.getY() - last.getY());
+                    clampView();
+                    followed = null;                 // spostare la vista a mano smette di seguire
                     autoFit = false;
                     viewListener.run();
                     repaint();
@@ -434,7 +453,7 @@ public class ArenaView extends JPanel {
                     Point2D w = vt.toWorld(e.getX(), e.getY());
                     RobotUnit r = robotAt(w);
                     int o = r == null ? obstacleAt(w) : -1;
-                    if (r != null) select(r);
+                    if (r != null) { select(r); if (e.getClickCount() >= 2) follow(r); }
                     else if (o >= 0) selectObstacle(o);
                     else if (e.getClickCount() >= 2) fitToWindow();
                     else { select(null); selectObstacle(-1); }
@@ -444,7 +463,10 @@ public class ArenaView extends JPanel {
                 resizing = null;
             }
 
+            @Override public void mouseExited(MouseEvent e) { edgePointer = null; }
+
             @Override public void mouseMoved(MouseEvent e) {
+                trackEdge(e.getX(), e.getY());
                 boolean over = false;
                 int k = editable() ? handleAt(e.getX(), e.getY()) : -1;
                 if (k >= 0) { setCursor(resizeCursor(selectedObstacle, k)); return; }
@@ -468,6 +490,7 @@ public class ArenaView extends JPanel {
                     return;
                 }
                 vt.zoomAt(Math.pow(1.15, -e.getPreciseWheelRotation()), e.getX(), e.getY());
+                clampView();
                 autoFit = false;
                 viewListener.run();
                 repaint();
@@ -481,6 +504,133 @@ public class ArenaView extends JPanel {
     private void installKeys() {
         bindRotation(KeyEvent.VK_Q, "juse-rot-ccw", -ROTATION_STEP);
         bindRotation(KeyEvent.VK_E, "juse-rot-cw", ROTATION_STEP);
+        bindPan(KeyEvent.VK_W, 0);
+        bindPan(KeyEvent.VK_A, 1);
+        bindPan(KeyEvent.VK_S, 2);
+        bindPan(KeyEvent.VK_D, 3);
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0), "juse-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0), "juse-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.SHIFT_DOWN_MASK), "juse-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "juse-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), "juse-zoom-out", () -> zoom(1 / 1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "juse-zoom-out", () -> zoom(1 / 1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), "juse-fit", this::fitToWindow);
+    }
+
+    private void bindKey(KeyStroke ks, String name, Runnable r) {
+        getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(ks, name);
+        getActionMap().put(name, new AbstractAction() {
+            @Override public void actionPerformed(ActionEvent e) { r.run(); }
+        });
+    }
+
+    /** W A S D: premuto = la vista si muove finché il tasto resta giù (anche con Maiusc). */
+    private void bindPan(int key, int dir) {
+        for (int mod : new int[] { 0, InputEvent.SHIFT_DOWN_MASK }) {
+            boolean fast = mod != 0;
+            bindKey(KeyStroke.getKeyStroke(key, mod, false), "juse-pan-" + dir + "-on-" + fast,
+                () -> setPanKey(dir, true, fast));
+            bindKey(KeyStroke.getKeyStroke(key, mod, true), "juse-pan-" + dir + "-off-" + fast,
+                () -> setPanKey(dir, false, fast));
+        }
+    }
+
+    // ------------------------------------------------------------------
+    //  Navigazione
+    // ------------------------------------------------------------------
+
+    /** Segue il robot (null = smette): la vista lo tiene al centro mentre si muove. */
+    public void follow(RobotUnit r) {
+        followed = r;
+        if (r != null) { autoFit = false; startNav(); }
+        viewListener.run();
+    }
+
+    public RobotUnit getFollowed() { return followed; }
+
+    /** Porta il punto di mondo (pixel) al centro della vista, senza cambiare lo zoom. */
+    public void centerOn(double wx, double wy) {
+        vt.centerOn(wx, wy, getWidth(), getHeight());
+        clampView();
+        followed = null;
+        autoFit = false;
+        viewListener.run();
+        repaint();
+    }
+
+    /** Il centro della vista resta dentro l'arena. */
+    private void clampView() {
+        if (getWidth() > 0 && getHeight() > 0) vt.clampCenter(new Rectangle2D.Double(0, 0, arenaW, arenaH), getWidth(), getHeight());
+    }
+
+    private void trackEdge(double x, double y) {
+        int[] d = ViewTransform.edgeDirection(x, y, getWidth(), getHeight(), EDGE_MARGIN_PX);
+        if (d[0] == 0 && d[1] == 0) { edgePointer = null; return; }
+        Point2D p = new Point2D.Double(x, y);
+        if (edgePointer == null) edgeSince = System.nanoTime();
+        edgePointer = p;
+        if (options.edgeScroll) startNav();
+    }
+
+    private void startNav() {
+        if (!navTimer.isRunning()) { lastNavTick = 0; navTimer.start(); }
+    }
+
+    /** Un passo di navigazione (~60 al secondo) finché c'è qualcosa che muove la vista. */
+    private void navTick() {
+        long now = System.nanoTime();
+        double dt = lastNavTick == 0 ? 0.016 : Math.min(0.1, (now - lastNavTick) / 1e9);
+        lastNavTick = now;
+        if (!navigate(now, dt)) { navTimer.stop(); lastNavTick = 0; }
+    }
+
+    /** Tasto di spostamento W/A/S/D (0 = su, 1 = sinistra, 2 = giù, 3 = destra) premuto o rilasciato. */
+    void setPanKey(int dir, boolean down, boolean fast) {
+        panKeys[dir] = down;
+        panFast = fast;
+        if (down) startNav();
+    }
+
+    /**
+     * Muove la vista di {@code dt} secondi (tasti, bordo, robot seguito).
+     * @return true se c'è ancora qualcosa che la muove
+     */
+    boolean navigate(long now, double dt) {
+        int kx = (panKeys[3] ? 1 : 0) - (panKeys[1] ? 1 : 0);
+        int ky = (panKeys[2] ? 1 : 0) - (panKeys[0] ? 1 : 0);
+        boolean keys = kx != 0 || ky != 0;
+        boolean fast = keys && panFast;
+        Point2D ep = edgePointer;
+        boolean edge = false;
+        if (!keys && ep != null && options.edgeScroll && now - edgeSince >= EDGE_DWELL_NS) {
+            int[] d = ViewTransform.edgeDirection(ep.getX(), ep.getY(), getWidth(), getHeight(), EDGE_MARGIN_PX);
+            kx = d[0];
+            ky = d[1];
+            edge = kx != 0 || ky != 0;
+        }
+        boolean moved = false;
+        if (keys || edge) {
+            // velocità in pixel di schermo al secondo: attraversare la vista in poco più di un secondo
+            double speed = 0.8 * Math.max(getWidth(), getHeight()) * (fast ? 3 : 1);
+            double norm = (kx != 0 && ky != 0) ? Math.sqrt(0.5) : 1;
+            vt.pan(-kx * speed * norm * dt, -ky * speed * norm * dt);
+            followed = null;
+            moved = true;
+        }
+        RobotUnit f = followed;
+        if (f != null) {
+            Position p = f.getPosition();
+            vt.moveCenterToward(p.x * Const.cellSize, p.y * Const.cellSize, getWidth(), getHeight(), 1 - Math.exp(-8 * dt));
+            moved = true;
+        }
+        if (moved) {
+            clampView();
+            autoFit = false;
+            viewListener.run();
+            repaint();
+        }
+        boolean waitingEdge = ep != null && options.edgeScroll;
+        return keys || edge || f != null || waitingEdge;
     }
 
     private void bindRotation(int key, String name, double delta) {
