@@ -30,8 +30,29 @@ import jusePack.utils.Position;
  */
 public class CollisionDetector {
 
-    /** Forme statiche: tutte (muri + ostacoli) e solo ostacoli (parallela a {@code obstacles}). */
-    private record Shapes(List<CollidableShape> all, List<CollidableShape> perObstacle) {}
+    /**
+     * Forme statiche: tutte (muri + ostacoli), solo ostacoli (parallela a {@code obstacles}),
+     * i quattro muri e la griglia che indicizza gli ostacoli per posizione.
+     */
+    private record Shapes(List<CollidableShape> all, List<CollidableShape> perObstacle,
+                          List<CollidableShape> walls, ShapeGrid grid) {}
+
+    /** Lato di una casella della griglia degli ostacoli, in pixel di mondo (4 celle). */
+    static final double GRID_BUCKET_PX = 4 * Const.cellSize;
+
+    /** Solo per i test: ignora la griglia e prova tutte le forme (il risultato deve essere identico). */
+    static volatile boolean bruteForceForTests = false;
+
+    /** Indici (crescenti) degli ostacoli il cui ingombro tocca il rettangolo dato. */
+    private static int[] near(Shapes sh, double ax, double ay, double bx, double by) {
+        if (bruteForceForTests) {
+            int[] all = new int[sh.perObstacle().size()];
+            int m = 0;
+            for (int i = 0; i < all.length; i++) if (sh.perObstacle().get(i) != null) all[m++] = i;
+            return java.util.Arrays.copyOf(all, m);
+        }
+        return sh.grid().query(ax, ay, bx, by);
+    }
 
     /** Sostituita in blocco da {@link #rebuild()}: chi legge vede sempre un insieme coerente. */
     private volatile Shapes shapes;
@@ -79,8 +100,13 @@ public class CollisionDetector {
         if (d < 1e-9) return true;
         dx /= d;
         dy /= d;
-        for (CollidableShape s : shapes.all()) {
+        Shapes sh = shapes;
+        for (CollidableShape s : sh.walls()) {
             double hit = s.rayIntersect(ax, ay, dx, dy, d);
+            if (hit >= 0 && hit < d - 1e-6) return false;
+        }
+        for (int i : near(sh, Math.min(ax, bx), Math.min(ay, by), Math.max(ax, bx), Math.max(ay, by))) {
+            double hit = sh.perObstacle().get(i).rayIntersect(ax, ay, dx, dy, d);
             if (hit >= 0 && hit < d - 1e-6) return false;
         }
         return true;
@@ -93,6 +119,7 @@ public class CollisionDetector {
     private Shapes buildShapes(List<Obstacle> obstacles) {
         List<CollidableShape> result = new ArrayList<>();
         List<CollidableShape> perObstacle = new ArrayList<>();
+        List<CollidableShape> walls = new ArrayList<>();
 
         // muri dell'arena: fuori dal pavimento, con la faccia interna esattamente sul bordo
         double aw = arenaWidthPx, ah = arenaHeightPx, t = WALL_THICKNESS_PX;
@@ -100,6 +127,7 @@ public class CollisionDetector {
         result.add(new RectShape(aw + t / 2, ah / 2,     t,          ah + 2 * t, 0));  // destro
         result.add(new RectShape(aw / 2,     -t / 2,     aw + 2 * t, t,          0));  // superiore
         result.add(new RectShape(aw / 2,     ah + t / 2, aw + 2 * t, t,          0));  // inferiore
+        walls.addAll(result);
 
         for (Obstacle obs : obstacles) {
             ObjectID id = obs.getID();
@@ -117,7 +145,8 @@ public class CollisionDetector {
             perObstacle.add(shape);
             if (shape != null) result.add(shape);
         }
-        return new Shapes(List.copyOf(result), java.util.Collections.unmodifiableList(perObstacle));
+        return new Shapes(List.copyOf(result), java.util.Collections.unmodifiableList(perObstacle),
+            List.copyOf(walls), new ShapeGrid(perObstacle, GRID_BUCKET_PX));
     }
 
     // ---------------------------------------------------------
@@ -171,12 +200,25 @@ public class CollisionDetector {
         double cy      = pos.y * cellSizePx;
         double heading = pos.theta;
 
+        // solo gli ostacoli e i robot che i raggi possono raggiungere
+        Shapes sh = shapes;
+        int[] nearIdx = near(sh, cx - maxRayDist, cy - maxRayDist, cx + maxRayDist, cy + maxRayDist);
+        List<CollidableShape> candidates = new ArrayList<>(sh.walls().size() + nearIdx.length + 4);
+        candidates.addAll(sh.walls());
+        for (int k : nearIdx) candidates.add(sh.perObstacle().get(k));
+        double reach = maxRayDist + robotRadiusPx;
+        for (CircleShape s : robots) {
+            if (s.getOwner() == testUnit) continue;
+            double ddx = s.getCx() - cx, ddy = s.getCy() - cy;
+            if (bruteForceForTests || ddx * ddx + ddy * ddy <= reach * reach) candidates.add(s);
+        }
+
         for (int i = 0; i < n; i++) {
             double a  = heading + irSensors.getSensorAngle(i);
             double dx = Math.cos(a);
             double dy = Math.sin(a);
 
-            double d = findNearestHit(testUnit, robots, cx, cy, dx, dy, maxRayDist);
+            double d = findNearestHit(candidates, cx, cy, dx, dy, maxRayDist);
             if (d < 0) continue;  // niente nel campo: restano i valori di riposo
 
             int surfaceDist = (int) Math.max(0, d - robotRadiusPx);
@@ -199,15 +241,10 @@ public class CollisionDetector {
         bumpSensors.publish(bumpVal, bumpPts);
     }
 
-    private double findNearestHit(UnitObject self, List<CircleShape> robots,
-                                  double ox, double oy, double dx, double dy, double maxDist) {
+    private static double findNearestHit(List<CollidableShape> candidates,
+                                         double ox, double oy, double dx, double dy, double maxDist) {
         double nearest = -1;
-        for (CollidableShape s : shapes.all()) {
-            double d = s.rayIntersect(ox, oy, dx, dy, maxDist);
-            if (d >= 0 && (nearest < 0 || d < nearest)) nearest = d;
-        }
-        for (CircleShape s : robots) {
-            if (s.getOwner() == self) continue;
+        for (CollidableShape s : candidates) {
             double d = s.rayIntersect(ox, oy, dx, dy, maxDist);
             if (d >= 0 && (nearest < 0 || d < nearest)) nearest = d;
         }
@@ -260,11 +297,14 @@ public class CollisionDetector {
     }
 
     private void checkPlacement(List<UnitObject> units, List<String> problems, java.util.Set<UnitObject> bad) {
-        List<CollidableShape> all = shapes.all();
+        Shapes sh = shapes;
         int probes = 72; // un raggio ogni 5 gradi
         for (UnitObject u : units) {
             Position p = u.getExactPos();
             double cx = p.x * cellSizePx, cy = p.y * cellSizePx;
+            List<CollidableShape> all = new ArrayList<>(sh.walls());
+            for (int k : near(sh, cx - robotRadiusPx, cy - robotRadiusPx, cx + robotRadiusPx, cy + robotRadiusPx))
+                all.add(sh.perObstacle().get(k));
             for (int k = 0; k < probes; k++) {
                 double a = 2 * Math.PI * k / probes;
                 double dx = Math.cos(a), dy = Math.sin(a);
@@ -294,14 +334,16 @@ public class CollisionDetector {
     }
 
     private void checkObstacles(List<String> problems, java.util.Set<Integer> bad) {
+        Shapes sh = shapes;
         List<Area> areas = new ArrayList<>();
-        for (CollidableShape s : shapes.perObstacle()) areas.add(s == null ? null : new Area(s.outline()));
+        for (CollidableShape s : sh.perObstacle()) areas.add(s == null ? null : new Area(s.outline()));
 
         double cell2 = cellSizePx * cellSizePx;
         for (int i = 0; i < areas.size(); i++) {
             if (areas.get(i) == null) continue;
-            for (int j = i + 1; j < areas.size(); j++) {
-                if (areas.get(j) == null) continue;
+            Rectangle2D bi = sh.grid().bounds(i);
+            for (int j : near(sh, bi.getMinX(), bi.getMinY(), bi.getMaxX(), bi.getMaxY())) {   // solo i vicini, in ordine
+                if (j <= i || areas.get(j) == null) continue;
                 // scarto rapido: rettangoli di ingombro disgiunti
                 if (!areas.get(i).getBounds2D().intersects(areas.get(j).getBounds2D())) continue;
                 Area inter = new Area(areas.get(i));
@@ -319,6 +361,8 @@ public class CollisionDetector {
         Area arena = new Area(new Rectangle2D.Double(0, 0, arenaWidthPx, arenaHeightPx));
         for (int i = 0; i < areas.size(); i++) {
             if (areas.get(i) == null) continue;
+            Rectangle2D b = areas.get(i).getBounds2D();
+            if (b.getMinX() >= 0 && b.getMinY() >= 0 && b.getMaxX() <= arenaWidthPx && b.getMaxY() <= arenaHeightPx) continue;
             Area outside = new Area(areas.get(i));
             outside.subtract(arena);
             double a = areaOf(outside);
