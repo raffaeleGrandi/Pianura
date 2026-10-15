@@ -1,0 +1,18 @@
+package testRobots9;
+
+import java.awt.Point;
+
+import jusePack.JuseManager;
+
+/**
+ * Large map (300 x 200 cells, 60 robots): fly over it with W A S D, the mouse at the border of
+ * the view or the minimap; double click a robot to follow it.
+ */
+public class MainClassTest09 {
+
+	public static void main(String[] args) {
+		JuseManager sim = new JuseManager(new Point(30, 30), "JUSE - large map", new ScenarioTest09());
+		sim.startSimPaused();
+	}
+
+}
