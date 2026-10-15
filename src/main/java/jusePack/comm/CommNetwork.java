@@ -184,11 +184,18 @@ public final class CommNetwork {
     }
 
     private void recordEvents(ConnectivityGraph a, ConnectivityGraph b, double time) {
+        // indice nel grafo vecchio di ogni nodo del nuovo (una volta sola: niente ricerche nel doppio ciclo)
+        java.util.Map<Integer, Integer> oldIndex = new java.util.HashMap<>(a.size() * 2);
+        for (int i = 0; i < a.size(); i++) oldIndex.put(a.id(i), i);
+        int[] toOld = new int[b.size()];
+        for (int i = 0; i < b.size(); i++) toOld[i] = oldIndex.getOrDefault(b.id(i), -1);
+        activeIds.clear();
+        for (int i = 0; i < b.size(); i++) activeIds.add(b.id(i));
         synchronized (events) {
             for (int i = 0; i < b.size(); i++) {
                 for (int j = 0; j < b.size(); j++) {
                     if (i == j) continue;
-                    int ai = a.indexOf(b.id(i)), aj = a.indexOf(b.id(j));
+                    int ai = toOld[i], aj = toOld[j];
                     boolean before = ai >= 0 && aj >= 0 && a.reaches(ai, aj);
                     boolean now = b.reaches(i, j);
                     if (before != now) add(new LinkEvent(time, b.id(i), b.id(j), now));
@@ -196,13 +203,19 @@ public final class CommNetwork {
             }
             // collegamenti spariti perché un robot non è più attivo
             for (int i = 0; i < a.size(); i++) {
+                boolean iGone = !stillActive(a.id(i));
                 for (int j = 0; j < a.size(); j++) {
                     if (i == j || !a.reaches(i, j)) continue;
-                    if (b.indexOf(a.id(i)) < 0 || b.indexOf(a.id(j)) < 0) add(new LinkEvent(time, a.id(i), a.id(j), false));
+                    if (iGone || !stillActive(a.id(j))) add(new LinkEvent(time, a.id(i), a.id(j), false));
                 }
             }
         }
     }
+
+    /** Id dei robot del grafo nuovo (solo thread del motore). */
+    private final java.util.Set<Integer> activeIds = new java.util.HashSet<>();
+
+    private boolean stillActive(int id) { return activeIds.contains(id); }
 
     private void add(LinkEvent e) {
         events.addLast(e);
