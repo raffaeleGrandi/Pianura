@@ -1,5 +1,7 @@
 package jusePack.gui;
 
+import jusePack.units.sensors.FloorMap;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +37,6 @@ public class SimPanel extends JPanel implements ActionListener{
 	protected Timer repainter;
 	private int refreshCounter = 0;
 	private final int arenaWpx, arenaHpx;
-	private final double floorScale;
 	private final SimEngine engine;
 	private List<RobotDummy> robots;
 	private jusePack.gui.view.ConnectivityWindow connectivity;
@@ -44,17 +45,14 @@ public class SimPanel extends JPanel implements ActionListener{
 		arenaWpx = (int) Math.round(scenario.getArenaWidthPx());
 		arenaHpx = (int) Math.round(scenario.getArenaHeightPx());
 		this.engine = engine;
-		// pavimento a risoluzione doppia (se la memoria lo consente): resta nitido con lo zoom
-		floorScale = jusePack.units.sensors.FloorMap.defaultScale(arenaWpx, arenaHpx);
 
 		logArea = new LogArea(logAreaInit, 4, 5);
 		repainter = new Timer(Const.repaintTime, this);
 		setLayout(new BorderLayout());
 
-		// con il motore la vista mostra la stessa immagine letta dai sensori ottici
-		BufferedImage floorImg = engine != null ? engine.getFloorMap().getImage()
-			: ArenaFloorPanel.renderFloor(scenario.getFloor(), arenaWpx, arenaHpx, floorScale);
-		arena = new ArenaView(floorImg, floorScale, arenaWpx, arenaHpx, scenario.getObstacles(), scenario.getRobots(), options);
+		// con il motore la vista mostra lo stesso pavimento letto dai sensori ottici
+		FloorMap floorMap = engine != null ? engine.getFloorMap() : newFloorMap(scenario.getFloor());
+		arena = new ArenaView(floorMap, arenaWpx, arenaHpx, scenario.getObstacles(), scenario.getRobots(), options);
 		add(arena, BorderLayout.CENTER);
 		if (engine != null) {
 			arena.setSceneEditor(new ArenaView.SceneEditor() {
@@ -101,10 +99,16 @@ public class SimPanel extends JPanel implements ActionListener{
 	private void changeFloor(FloorStyle style){
 		if (engine != null) {
 			engine.setFloor(style);   // cambia anche ciò che leggono i sensori ottici
-			arena.setFloorImage(engine.getFloorMap().getImage(), engine.getFloorMap().getScale());
+			arena.setFloor(engine.getFloorMap());
 		} else {
-			arena.setFloorImage(ArenaFloorPanel.renderFloor(style, arenaWpx, arenaHpx, floorScale), floorScale);
+			FloorMap old = arena.getFloor();
+			arena.setFloor(newFloorMap(style));
+			if (old != null) old.dispose();
 		}
+	}
+
+	private FloorMap newFloorMap(FloorStyle style){
+		return new FloorMap(style, arenaWpx, arenaHpx, FloorMap.defaultScale(arenaWpx, arenaHpx));
 	}
 
 	/** Esito della validazione dopo una modifica della scena, nel log. */

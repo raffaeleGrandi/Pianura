@@ -9,8 +9,8 @@ import jusePack.utils.Const;
  * Aspetto del pavimento dell'arena. È puramente grafico: i sensori dei robot
  * lavorano sulla geometria degli ostacoli e non vedono il pavimento.
  *
- * Il pavimento viene disegnato una sola volta all'avvio (insieme agli ostacoli)
- * in un'immagine di sfondo, quindi anche un'immagine grande non pesa sul frame rate.
+ * Il pavimento viene disegnato a riquadri, quando servono (vedi {@link #paintRegion}),
+ * e i riquadri sono conservati: anche un'arena molto grande non pesa sul frame rate.
  *
  * Uso in uno scenario:
  * <pre>
@@ -29,6 +29,24 @@ public interface FloorStyle {
      * @param cellSizePx dimensione di una cella in pixel (per i motivi legati alla griglia)
      */
     void paint(Graphics2D g, int width, int height, double cellSizePx);
+
+    /**
+     * Disegna solo la parte {@code [x0, x0+w) x [y0, y0+h)} di un pavimento grande
+     * {@code fullW x fullH} pixel, con il pixel (x0, y0) nell'origine di {@code g}.
+     *
+     * I pixel devono essere gli stessi che {@link #paint} disegnerebbe nello stesso punto, qualunque
+     * sia la regione: così il pavimento si può generare a riquadri senza giunture, anche quando
+     * l'arena è troppo grande per un'unica immagine. Gli stili predefiniti disegnano solo la regione;
+     * questa versione di ripiego disegna tutto il pavimento ritagliato alla regione (corretta, ma lenta
+     * su arene molto grandi).
+     */
+    default void paintRegion(Graphics2D g, int x0, int y0, int w, int h, int fullW, int fullH, double cellSizePx) {
+        Graphics2D c = (Graphics2D) g.create();
+        c.clipRect(0, 0, w, h);
+        c.translate(-x0, -y0);
+        paint(c, fullW, fullH, cellSizePx);
+        c.dispose();
+    }
 
     // ---- fabbriche ----
 

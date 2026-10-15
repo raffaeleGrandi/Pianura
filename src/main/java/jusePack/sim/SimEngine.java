@@ -75,11 +75,14 @@ public final class SimEngine {
         double w = detector.getArenaWidthPx(), h = detector.getArenaHeightPx();
         jusePack.units.sensors.FloorMap map = new jusePack.units.sensors.FloorMap(style, w, h,
             jusePack.units.sensors.FloorMap.defaultScale(w, h));
+        jusePack.units.sensors.FloorMap old;
         stepLock.lock();
         try {
+            old = floorMap;
             floorMap = map;
             if (running || thread != null) sense();
         } finally { stepLock.unlock(); }
+        if (old != null) old.dispose();   // ferma il disegno in background dei riquadri vecchi
     }
 
     public jusePack.units.sensors.FloorMap getFloorMap() { return floorMap; }

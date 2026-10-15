@@ -99,9 +99,12 @@ public class ImageFloor implements FloorStyle {
                 g.drawImage(image, (width - dw) / 2, (height - dh) / 2, dw, dh, null);
                 g.setClip(clip);
             }
-            case TILE -> {
-                for (int y = 0; y < height; y += ih)
-                    for (int x = 0; x < width; x += iw)
+            case TILE -> {   // solo le ripetizioni che cadono nella zona da disegnare
+                java.awt.Rectangle c = g.getClipBounds();
+                int ya = c == null ? 0 : Math.max(0, c.y / ih * ih), yb = c == null ? height : Math.min(height, c.y + c.height);
+                int xa = c == null ? 0 : Math.max(0, c.x / iw * iw), xb = c == null ? width : Math.min(width, c.x + c.width);
+                for (int y = ya; y < yb; y += ih)
+                    for (int x = xa; x < xb; x += iw)
                         g.drawImage(image, x, y, null);
             }
             case CENTER -> g.drawImage(image, (width - iw) / 2, (height - ih) / 2, null);

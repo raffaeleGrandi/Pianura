@@ -18,12 +18,27 @@ public class GridFloor implements FloorStyle {
 
     @Override
     public void paint(Graphics2D g, int width, int height, double cellSizePx) {
+        paintRegion(g, 0, 0, width, height, width, height, cellSizePx);
+    }
+
+    @Override
+    public void paintRegion(Graphics2D g0, int x0, int y0, int w, int h, int width, int height, double cellSizePx) {
+        Graphics2D g = (Graphics2D) g0.create();
+        g.clipRect(0, 0, w, h);
+        g.translate(-x0, -y0);
         g.setColor(background);
-        g.fillRect(0, 0, width, height);
+        g.fillRect(x0, y0, w, h);
         g.setColor(lines);
         double s = spacingCells * cellSizePx;
-        for (double x = s; x < width; x += s) { int xi = (int) Math.round(x); g.drawLine(xi, 0, xi, height); }
-        for (double y = s; y < height; y += s) { int yi = (int) Math.round(y); g.drawLine(0, yi, width, yi); }
+        for (long k = Math.max(1, (long) Math.floor(x0 / s)); k * s < Math.min(width, x0 + w + 1); k++) {
+            int xi = (int) Math.round(k * s);
+            g.drawLine(xi, y0, xi, y0 + h);
+        }
+        for (long k = Math.max(1, (long) Math.floor(y0 / s)); k * s < Math.min(height, y0 + h + 1); k++) {
+            int yi = (int) Math.round(k * s);
+            g.drawLine(x0, yi, x0 + w, yi);
+        }
+        g.dispose();
     }
 
 }

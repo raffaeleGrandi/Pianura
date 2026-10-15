@@ -47,6 +47,7 @@ import jusePack.units.RobotUnit;
 import jusePack.units.UnitObject;
 import jusePack.units.collisions.CollisionDetector;
 import jusePack.units.collisions.SensorArray;
+import jusePack.units.sensors.FloorMap;
 import jusePack.utils.Const;
 import jusePack.utils.Position;
 
@@ -54,7 +55,7 @@ import jusePack.utils.Position;
  * Vista dell'arena con zoom, spostamento e modifica della scena.
  *
  * Tutto è disegnato in coordinate di mondo attraverso un'unica {@link ViewTransform}:
- * pavimento (immagine pre-renderizzata ad alta risoluzione), muri, ostacoli (vettori,
+ * pavimento (riquadri della {@link FloorMap} alla risoluzione adatta allo zoom), muri, ostacoli (vettori,
  * dagli stessi contorni delle collisioni), livelli opzionali e robot (rototraslazione).
  *
  * Mouse — sempre: rotellina = zoom attorno al cursore · trascinamento sul vuoto = spostamento
@@ -92,8 +93,7 @@ public class ArenaView extends JPanel {
     private final ViewTransform vt = new ViewTransform();
     private final ViewOptions options;
     private final double arenaW, arenaH;
-    private volatile BufferedImage floorImage;
-    private volatile double floorScale;
+    private volatile FloorMap floor;
     private final List<Obstacle> obstacles;
     private volatile List<Shape> outlines = List.of();
     private volatile List<RobotUnit> robots;
@@ -112,13 +112,12 @@ public class ArenaView extends JPanel {
     private Runnable viewListener = () -> {};
 
     /**
-     * @param floorImage pavimento renderizzato a {@code floorScale} pixel per pixel di mondo
-     * @param obstacles  ostacoli dello scenario (gli stessi oggetti usati dal motore)
+     * @param floor     pavimento (lo stesso letto dai sensori ottici, se c'è il motore)
+     * @param obstacles ostacoli dello scenario (gli stessi oggetti usati dal motore)
      */
-    public ArenaView(BufferedImage floorImage, double floorScale, double arenaWidthPx, double arenaHeightPx,
+    public ArenaView(FloorMap floor, double arenaWidthPx, double arenaHeightPx,
                      List<Obstacle> obstacles, List<? extends RobotUnit> robots, ViewOptions options) {
-        this.floorImage = floorImage;
-        this.floorScale = floorScale;
+        this.floor = floor;
         this.arenaW = arenaWidthPx;
         this.arenaH = arenaHeightPx;
         this.obstacles = obstacles;
@@ -140,7 +139,15 @@ public class ArenaView extends JPanel {
 
     public ViewTransform getTransform() { return vt; }
 
-    public void setFloorImage(BufferedImage img, double scale) { floorImage = img; floorScale = scale; repaint(); }
+    public void setFloor(FloorMap f) { floor = f; repaint(); }
+
+    public FloorMap getFloor() { return floor; }
+
+    /** Rettangolo di mondo (pixel) visibile ora nella vista. */
+    public Rectangle2D visibleWorld() {
+        Point2D a = vt.toWorld(0, 0), b = vt.toWorld(getWidth(), getHeight());
+        return new Rectangle2D.Double(a.getX(), a.getY(), b.getX() - a.getX(), b.getY() - a.getY());
+    }
 
     public void setRobots(List<? extends RobotUnit> list) { robots = new ArrayList<>(list); trails.clear(); repaint(); }
 
@@ -527,11 +534,29 @@ public class ArenaView extends JPanel {
         g.dispose();
     }
 
+    /**
+     * Pavimento: prima la panoramica (sempre pronta), poi, se lo zoom lo richiede, i riquadri
+     * visibili del livello adatto. I riquadri non ancora pronti vengono disegnati in background
+     * e compaiono al frame successivo: nel frattempo si vede la panoramica.
+     */
     private void paintFloor(Graphics2D g) {
-        BufferedImage img = floorImage;
-        if (img == null) return;
-        AffineTransform at = AffineTransform.getScaleInstance(1 / floorScale, 1 / floorScale);
-        g.drawImage(img, at, null);
+        FloorMap fm = floor;
+        if (fm == null) return;
+        int top = fm.levels() - 1;
+        double so = fm.levelScale(top);
+        g.drawImage(fm.overview(), AffineTransform.getScaleInstance(1 / so, 1 / so), null);
+        int k = fm.levelFor(vt.getScale());
+        fm.cancelPending();                       // servono solo i riquadri di questo frame
+        if (k == top) return;
+        double s = fm.levelScale(k);
+        Rectangle2D v = visibleWorld();
+        fm.forEachTile(k, v.getMinX(), v.getMinY(), v.getMaxX(), v.getMaxY(), t -> {
+            BufferedImage img = fm.tileIfReady(k, t[0], t[1], this::repaint);
+            if (img == null) return;
+            AffineTransform at = AffineTransform.getTranslateInstance(t[0] * FloorMap.TILE / s, t[1] * FloorMap.TILE / s);
+            at.scale(1 / s, 1 / s);
+            g.drawImage(img, at, null);
+        });
     }
 
     private void paintWalls(Graphics2D g) {
@@ -545,8 +570,11 @@ public class ArenaView extends JPanel {
     private void paintObstacles(Graphics2D g, double px) {
         List<Shape> ol = outlines;
         Set<Integer> bad = badObstacles;
+        Rectangle2D v = visibleWorld();
         for (int i = 0; i < ol.size() && i < obstacles.size(); i++) {
-            ArenaFloorPanel.paintObstacle(g, obstacles.get(i), ol.get(i));
+            Shape o = ol.get(i);
+            if (o != null && !o.getBounds2D().intersects(v)) continue;   // fuori dalla vista
+            ArenaFloorPanel.paintObstacle(g, obstacles.get(i), o);
         }
         BasicStroke dashed = new BasicStroke((float) (2.5 * px), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER,
             10f, new float[] { (float) (7 * px), (float) (4 * px) }, 0f);
@@ -654,8 +682,11 @@ public class ArenaView extends JPanel {
         if (c / px < 5) return;   // celle troppo piccole sullo schermo: griglia illeggibile
         g.setColor(new Color(0, 0, 0, 45));
         g.setStroke(new BasicStroke((float) px));
-        for (double x = c; x < arenaW; x += c) g.draw(new Line2D.Double(x, 0, x, arenaH));
-        for (double y = c; y < arenaH; y += c) g.draw(new Line2D.Double(0, y, arenaW, y));
+        Rectangle2D v = visibleWorld();   // solo le linee visibili
+        double y0 = Math.max(0, v.getMinY()), y1 = Math.min(arenaH, v.getMaxY());
+        double x0 = Math.max(0, v.getMinX()), x1 = Math.min(arenaW, v.getMaxX());
+        for (double x = Math.max(1, Math.ceil(x0 / c)) * c; x < x1; x += c) g.draw(new Line2D.Double(x, y0, x, y1));
+        for (double y = Math.max(1, Math.ceil(y0 / c)) * c; y < y1; y += c) g.draw(new Line2D.Double(x0, y, x1, y));
     }
 
     private void recordTrails(List<RobotUnit> rs, Position[] pos) {

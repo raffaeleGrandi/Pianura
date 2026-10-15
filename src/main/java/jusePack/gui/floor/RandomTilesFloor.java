@@ -3,11 +3,11 @@ package jusePack.gui.floor;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.util.Random;
 
 /**
  * Piastrelle quadrate con tonalità leggermente diverse, un po' di grana e fughe scure.
- * Generato proceduralmente: con lo stesso seed il pavimento è sempre identico.
+ * Generato proceduralmente: con lo stesso seed il pavimento è sempre identico,
+ * e si può disegnare a riquadri senza giunture.
  */
 public class RandomTilesFloor implements FloorStyle {
 
@@ -32,35 +32,49 @@ public class RandomTilesFloor implements FloorStyle {
 
     @Override
     public void paint(Graphics2D g, int width, int height, double cellSizePx) {
-        Random rnd = new Random(seed);
-        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        double s = tileCells * cellSizePx;
-        int rows = (int) Math.ceil(height / s), cols = (int) Math.ceil(width / s);
+        paintRegion(g, 0, 0, width, height, width, height, cellSizePx);
+    }
 
-        // 1. piastrelle: tonalità per piastrella
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
-                int d = variation == 0 ? 0 : rnd.nextInt(2 * variation + 1) - variation;
-                int rgb = shade(base, d).getRGB();
-                int x0 = (int) Math.round(c * s), y0 = (int) Math.round(r * s);
-                int x1 = Math.min(width, (int) Math.round((c + 1) * s)), y1 = Math.min(height, (int) Math.round((r + 1) * s));
-                for (int y = y0; y < y1; y++) for (int x = x0; x < x1; x++) img.setRGB(x, y, rgb);
+    /**
+     * Ogni pixel dipende solo dalla sua posizione e dal seme: tonalità della piastrella,
+     * grana (~4% dei pixel) e fughe larghe 2 pixel sui bordi delle piastrelle.
+     */
+    @Override
+    public void paintRegion(Graphics2D g, int x0, int y0, int w, int h, int fullW, int fullH, double cellSizePx) {
+        if (w <= 0 || h <= 0) return;
+        double s = tileCells * cellSizePx;
+        int baseRgb = base.getRGB(), grout = FloorHash.shade(baseRgb, -60);
+        BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        int[] buf = ((java.awt.image.DataBufferInt) img.getRaster().getDataBuffer()).getData();
+        boolean[] colGrout = new boolean[w];
+        int[] col = new int[w];
+        for (int x = 0; x < w; x++) { colGrout[x] = isGrout(x0 + x, s); col[x] = (int) Math.floor((x0 + x) / s); }
+        for (int y = 0; y < h; y++) {
+            int py = y0 + y;
+            boolean rowGrout = isGrout(py, s);
+            int row = (int) Math.floor(py / s);
+            int lastCol = Integer.MIN_VALUE, tileDelta = 0;
+            for (int x = 0; x < w; x++) {
+                int rgb;
+                if (rowGrout || colGrout[x]) rgb = grout;
+                else {
+                    if (col[x] != lastCol) { lastCol = col[x]; tileDelta = FloorHash.symmetric(seed, lastCol, row, 1, variation); }
+                    int d = tileDelta;
+                    long hg = FloorHash.mix(seed, x0 + x, py, 2);
+                    if ((hg & 0xffff) < 65536 / 25) d += (int) Math.floorMod(hg >>> 16, 31L) - 15;   // grana
+                    rgb = FloorHash.shade(baseRgb, d);
+                }
+                buf[y * w + x] = rgb;
             }
         }
-        // 2. grana: piccole variazioni casuali su ~4% dei pixel
-        int grains = width * height / 25;
-        for (int k = 0; k < grains; k++) {
-            int x = rnd.nextInt(width), y = rnd.nextInt(height);
-            img.setRGB(x, y, shade(new Color(img.getRGB(x, y)), rnd.nextInt(31) - 15).getRGB());
-        }
-        // 3. fughe
-        Graphics2D gi = img.createGraphics();
-        gi.setColor(shade(base, -60));
-        for (int c = 0; c <= cols; c++) { int x = (int) Math.round(c * s); gi.fillRect(x - 1, 0, 2, height); }
-        for (int r = 0; r <= rows; r++) { int y = (int) Math.round(r * s); gi.fillRect(0, y - 1, width, 2); }
-        gi.dispose();
-
         g.drawImage(img, 0, 0, null);
+    }
+
+    /** Fuga: i due pixel attorno a ogni bordo di piastrella (round(k * s) - 1 e round(k * s)). */
+    private static boolean isGrout(int v, double s) {
+        long k = Math.round(v / s);
+        long b = Math.round(k * s);
+        return v == b || v == b - 1;
     }
 
     /** Schiarisce/scurisce un colore di {@code d} livelli su tutti i canali. */

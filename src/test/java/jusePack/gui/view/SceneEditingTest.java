@@ -40,7 +40,7 @@ class SceneEditingTest {
             obstacles.add(new Obstacle(ArenaObjectType.OBSTACLE_OVAL, Color.WHITE, new Position(30, 30, 0), new Dimension(4, 4)));
             robots.add(new RobotDummy(1, new Position(20, 20, 0), 2) { @Override public void executeLoop() {} });
             detector = new CollisionDetector(obstacles);
-            view = new ArenaView(new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB), 1, Const.arenaWidth, Const.arenaHeight,
+            view = new ArenaView(new jusePack.units.sensors.FloorMap(jusePack.gui.floor.FloorStyle.plain(java.awt.Color.WHITE), Const.arenaWidth, Const.arenaHeight, 1), Const.arenaWidth, Const.arenaHeight,
                 obstacles, robots, new ViewOptions());
             view.setSize(612, 612);
             view.fitToWindow();

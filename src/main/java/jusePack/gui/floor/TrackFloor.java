@@ -29,7 +29,7 @@ public class TrackFloor implements FloorStyle {
         g.fillRect(0, 0, width, height);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(line);
-        g.setStroke(new BasicStroke((float) (lineCells * cellSizePx), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        BasicStroke stroke = new BasicStroke((float) (lineCells * cellSizePx), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
 
         double m = marginCells * cellSizePx;
         double w = width - 2 * m, h = height - 2 * m;
@@ -50,7 +50,16 @@ public class TrackFloor implements FloorStyle {
         p.lineTo(x0, y0 + r);
         p.quadTo(x0, y0, x0 + r, y0);
         p.closePath();
-        g.draw(p);
+        // linea → poligono in coordinate assolute, poi riempito: il risultato non dipende dal ritaglio,
+        // quindi la pista si può disegnare a riquadri senza giunture
+        g.fill(flatten(stroke.createStrokedShape(flatten(p))));
+    }
+
+    /** Spezzata equivalente alla forma (tolleranza 0.05 pixel). */
+    private static Path2D flatten(java.awt.Shape shape) {
+        Path2D out = new Path2D.Double();
+        out.append(new java.awt.geom.FlatteningPathIterator(shape.getPathIterator(null), 0.05, 16), false);
+        return out;
     }
 
 }

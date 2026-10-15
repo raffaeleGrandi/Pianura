@@ -30,18 +30,29 @@ public class CheckerboardFloor implements FloorStyle {
 
     @Override
     public void paint(Graphics2D g, int width, int height, double cellSizePx) {
+        paintRegion(g, 0, 0, width, height, width, height, cellSizePx);
+    }
+
+    @Override
+    public void paintRegion(Graphics2D g0, int x0, int y0, int w, int h, int width, int height, double cellSizePx) {
+        Graphics2D g = (Graphics2D) g0.create();
+        g.clipRect(0, 0, w, h);
+        g.translate(-x0, -y0);
         double s = squareCells * cellSizePx;
         int rows = (int) Math.ceil(height / s), cols = (int) Math.ceil(width / s);
-        for (int r = 0; r < rows; r++) {
-            for (int c = 0; c < cols; c++) {
+        int r0 = Math.max(0, (int) Math.floor(y0 / s) - 1), r1 = Math.min(rows - 1, (int) Math.floor((y0 + h) / s) + 1);
+        int c0 = Math.max(0, (int) Math.floor(x0 / s) - 1), c1 = Math.min(cols - 1, (int) Math.floor((x0 + w) / s) + 1);
+        for (int r = r0; r <= r1; r++) {
+            for (int c = c0; c <= c1; c++) {
                 g.setColor(colorAt(r, c));
                 // arrotondamento sui bordi: niente fessure tra quadrati con lato non intero
-                int x0 = (int) Math.round(c * s), y0 = (int) Math.round(r * s);
-                int x1 = (int) Math.round((c + 1) * s), y1 = (int) Math.round((r + 1) * s);
-                g.fillRect(x0, y0, x1 - x0, y1 - y0);
+                int qx0 = (int) Math.round(c * s), qy0 = (int) Math.round(r * s);
+                int qx1 = (int) Math.round((c + 1) * s), qy1 = (int) Math.round((r + 1) * s);
+                g.fillRect(qx0, qy0, qx1 - qx0, qy1 - qy0);
             }
         }
         if (banner) paintBanner(g, rows, cols, s);
+        g.dispose();
     }
 
     /** "JUSE" nella penultima riga, una lettera per quadrato, nel colore opposto al quadrato. */
