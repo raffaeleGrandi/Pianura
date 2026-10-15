@@ -21,6 +21,8 @@ public final class ViewOptions {
     public volatile boolean commLinks = false;
     /** Transmission range of each robot. */
     public volatile boolean commRange = false;
+    /** Miniature of the whole arena in the bottom-right corner (shown only when the arena does not fit the view). */
+    public volatile boolean minimap = true;
     /** The view scrolls when the pointer rests near its border (like strategy games). */
     public volatile boolean edgeScroll = true;
     /** Griglia delle celle sopra il pavimento. */

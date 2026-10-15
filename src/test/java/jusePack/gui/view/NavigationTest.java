@@ -103,4 +103,24 @@ class NavigationTest {
         v.setPanKey(0, false, false);
     }
 
+    @Test
+    void minimapShowsTheWholeArenaAndMovesTheView() {
+        java.awt.Rectangle mm = Minimap.bounds(800, 600, W, H);
+        assertEquals(Minimap.MAX_SIDE, mm.width, "the longer side of the arena fills the minimap");
+        assertEquals(Math.round(Minimap.MAX_SIDE * H / W), mm.height);
+        assertEquals(800 - Minimap.MARGIN, mm.x + mm.width, "bottom-right corner");
+        assertEquals(600 - Minimap.MARGIN, mm.y + mm.height);
+        Point2D mid = Minimap.toWorld(mm, mm.x + mm.width / 2.0, mm.y + mm.height / 2.0, W, H);
+        assertEquals(W / 2, mid.getX(), W / mm.width);
+        assertEquals(0, Minimap.toWorld(mm, mm.x - 50, mm.y, W, H).getX(), "clamped to the arena");
+
+        ArenaView v = view(null);
+        assertTrue(v.minimapVisible(), "zoomed in on a large arena");
+        v.centerFromMinimap(mm.x + mm.width * 0.25, mm.y + mm.height * 0.75);
+        assertEquals(W * 0.25, center(v).getX(), W / mm.width);
+        assertEquals(H * 0.75, center(v).getY(), H / mm.height);
+        v.fitToWindow();
+        assertFalse(v.minimapVisible(), "the whole arena is visible: no minimap");
+    }
+
 }

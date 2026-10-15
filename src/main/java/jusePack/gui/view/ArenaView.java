@@ -123,6 +123,8 @@ public class ArenaView extends JPanel {
     private volatile RobotUnit followed;
     private long lastNavTick;
     private final javax.swing.Timer navTimer = new javax.swing.Timer(16, e -> navTick());
+    private final Minimap minimap = new Minimap();
+    private boolean minimapDrag;
     private Runnable viewListener = () -> {};
 
     /**
@@ -400,6 +402,11 @@ public class ArenaView extends JPanel {
 
             @Override public void mousePressed(MouseEvent e) {
                 edgePointer = null;
+                if (e.getButton() == MouseEvent.BUTTON1 && overMinimap(e.getX(), e.getY())) {
+                    minimapDrag = true;
+                    centerFromMinimap(e.getX(), e.getY());
+                    return;
+                }
                 last = e.getPoint();
                 dragged = false;
                 dragTarget = null;
@@ -421,6 +428,7 @@ public class ArenaView extends JPanel {
             }
 
             @Override public void mouseDragged(MouseEvent e) {
+                if (minimapDrag) { centerFromMinimap(e.getX(), e.getY()); return; }
                 if (last == null) return;
                 dragged = true;
                 boolean snap = (e.getModifiersEx() & (InputEvent.CTRL_DOWN_MASK | InputEvent.META_DOWN_MASK)) != 0;
@@ -448,6 +456,7 @@ public class ArenaView extends JPanel {
             }
 
             @Override public void mouseReleased(MouseEvent e) {
+                if (minimapDrag) { minimapDrag = false; return; }
                 if (dragged && (dragTarget != null || resizing != null)) notifyChanged(true);
                 if (!dragged && resizing == null && e.getButton() == MouseEvent.BUTTON1) {
                     Point2D w = vt.toWorld(e.getX(), e.getY());
@@ -466,6 +475,11 @@ public class ArenaView extends JPanel {
             @Override public void mouseExited(MouseEvent e) { edgePointer = null; }
 
             @Override public void mouseMoved(MouseEvent e) {
+                if (overMinimap(e.getX(), e.getY())) {
+                    edgePointer = null;
+                    setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                    return;
+                }
                 trackEdge(e.getX(), e.getY());
                 boolean over = false;
                 int k = editable() ? handleAt(e.getX(), e.getY()) : -1;
@@ -556,6 +570,44 @@ public class ArenaView extends JPanel {
         autoFit = false;
         viewListener.run();
         repaint();
+    }
+
+    // ------------------------------------------------------------------
+    //  Minimappa
+    // ------------------------------------------------------------------
+
+    /** La minimappa si vede se è attiva e l'arena non sta già tutta nella vista. */
+    public boolean minimapVisible() {
+        if (!options.minimap || getWidth() < 3 * Minimap.MAX_SIDE / 2 || getHeight() < Minimap.MAX_SIDE) return false;
+        Rectangle2D v = visibleWorld();
+        return !(v.getMinX() <= 0 && v.getMinY() <= 0 && v.getMaxX() >= arenaW && v.getMaxY() >= arenaH);
+    }
+
+    /** Rettangolo di schermo della minimappa. */
+    public java.awt.Rectangle minimapBounds() { return Minimap.bounds(getWidth(), getHeight(), arenaW, arenaH); }
+
+    private boolean overMinimap(double x, double y) {
+        if (!minimapVisible()) return false;
+        java.awt.Rectangle b = minimapBounds();
+        b.grow(4, 4);
+        return b.contains(x, y);
+    }
+
+    /** Clic o trascinamento sulla minimappa: la vista va lì (stesso zoom). */
+    void centerFromMinimap(double x, double y) {
+        Point2D w = Minimap.toWorld(minimapBounds(), x, y, arenaW, arenaH);
+        centerOn(w.getX(), w.getY());
+    }
+
+    private void paintMinimap(Graphics2D g, List<RobotUnit> rs, Position[] pos) {
+        List<Point2D> pts = new ArrayList<>(pos.length);
+        int hl = -1;
+        RobotUnit mark = followed != null ? followed : selected;
+        for (int i = 0; i < pos.length; i++) {
+            pts.add(new Point2D.Double(pos[i].x * Const.cellSize, pos[i].y * Const.cellSize));
+            if (rs.get(i) == mark) hl = i;
+        }
+        minimap.paint(g, minimapBounds(), arenaW, arenaH, floor, outlines, pts, hl, visibleWorld());
     }
 
     /** Il centro della vista resta dentro l'arena. */
@@ -681,6 +733,7 @@ public class ArenaView extends JPanel {
         g.setTransform(screen);
         if (options.ids) paintLabels(g, rs, pos);
         if (editable()) paintEditHint(g);
+        if (minimapVisible()) paintMinimap(g, rs, pos);
         g.dispose();
     }
 

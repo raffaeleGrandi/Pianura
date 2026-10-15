@@ -87,8 +87,11 @@ public class ViewSidePanel extends JPanel {
         JPanel vista = section("View");
         vista.add(zoomButtons);
         vista.add(zoomLabel);
-        vista.add(small("Drag to pan · wheel to zoom · W A S D to fly over the map (Shift = faster) · Home = fit"));
+        vista.add(small("Drag to pan · wheel to zoom"));
+        vista.add(small("WASD: fly · Shift: faster · Home: fit"));
+        vista.add(small("Double click a robot: follow it"));
         vista.add(layer("Edge scrolling", () -> options.edgeScroll, v -> options.edgeScroll = v));
+        vista.add(layer("Minimap", () -> options.minimap, v -> options.minimap = v));
         add(vista);
 
         // --- Livelli ---
