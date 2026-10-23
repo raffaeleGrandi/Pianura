@@ -1,9 +1,9 @@
 """
 Example: robots that wander around and steer away from obstacles, driven from Python.
 
-    1. run the JUSE example scenario 07 (testRobots7.MainClassTest07): it starts paused
+    1. run the Pianura example scenario 07 (./gradlew run -Pexample=07): it starts paused
     2. python3 wander.py 1 2          (one thread per robot id)
-    3. press Run (or Space) in JUSE
+    3. press Run (or Space) in Pianura
 
 Each robot also sends a radio beacon every second and prints which robots it can hear
 (neighbours are forgotten after 2.5 s of silence).
@@ -15,7 +15,7 @@ import random
 import sys
 import threading
 
-from juse_client import JuseRobot, RobotStopped
+from pianura_client import PianuraRobot, RobotStopped
 
 FRONT = (0, 1, 2, 16, 17)          # IR sensors around the heading (index 0 = front, clockwise)
 LEFT_SIDE = (13, 14, 15, 16, 17)
@@ -33,7 +33,7 @@ def wander(robot_id: int, host: str = "127.0.0.1", port: int = 5555, seed: int =
     next_beacon = 0.0
     heard = {}                                 # neighbour id -> last time we heard it
     shown = set()
-    with JuseRobot(robot_id, host, port) as robot:
+    with PianuraRobot(robot_id, host, port) as robot:
         print(f"robot {robot_id}: connected, mode={robot.welcome['mode']}, period={robot.welcome.get('period')} s")
         try:
             while True:
