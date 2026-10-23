@@ -82,12 +82,12 @@ public class SimControlBar extends JToolBar {
 
     /** Registra le scorciatoie da tastiera sul componente indicato (valide in tutta la finestra). */
     public void installKeyBindings(JComponent target) {
-        target.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "juse-toggle");
-        target.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "juse-step");
-        target.getActionMap().put("juse-toggle", new AbstractAction() {
+        target.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "pianura-toggle");
+        target.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "pianura-step");
+        target.getActionMap().put("pianura-toggle", new AbstractAction() {
             public void actionPerformed(ActionEvent e) { toggle(); }
         });
-        target.getActionMap().put("juse-step", new AbstractAction() {
+        target.getActionMap().put("pianura-step", new AbstractAction() {
             public void actionPerformed(ActionEvent e) { doStep(); }
         });
     }

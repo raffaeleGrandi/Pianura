@@ -516,19 +516,19 @@ public class ArenaView extends JPanel {
     }
 
     private void installKeys() {
-        bindRotation(KeyEvent.VK_Q, "juse-rot-ccw", -ROTATION_STEP);
-        bindRotation(KeyEvent.VK_E, "juse-rot-cw", ROTATION_STEP);
+        bindRotation(KeyEvent.VK_Q, "pianura-rot-ccw", -ROTATION_STEP);
+        bindRotation(KeyEvent.VK_E, "pianura-rot-cw", ROTATION_STEP);
         bindPan(KeyEvent.VK_W, 0);
         bindPan(KeyEvent.VK_A, 1);
         bindPan(KeyEvent.VK_S, 2);
         bindPan(KeyEvent.VK_D, 3);
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0), "juse-zoom-in", () -> zoom(1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0), "juse-zoom-in", () -> zoom(1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.SHIFT_DOWN_MASK), "juse-zoom-in", () -> zoom(1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "juse-zoom-in", () -> zoom(1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), "juse-zoom-out", () -> zoom(1 / 1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "juse-zoom-out", () -> zoom(1 / 1.25));
-        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), "juse-fit", this::fitToWindow);
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0), "pianura-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, 0), "pianura-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, InputEvent.SHIFT_DOWN_MASK), "pianura-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_ADD, 0), "pianura-zoom-in", () -> zoom(1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, 0), "pianura-zoom-out", () -> zoom(1 / 1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, 0), "pianura-zoom-out", () -> zoom(1 / 1.25));
+        bindKey(KeyStroke.getKeyStroke(KeyEvent.VK_HOME, 0), "pianura-fit", this::fitToWindow);
     }
 
     private void bindKey(KeyStroke ks, String name, Runnable r) {
@@ -542,9 +542,9 @@ public class ArenaView extends JPanel {
     private void bindPan(int key, int dir) {
         for (int mod : new int[] { 0, InputEvent.SHIFT_DOWN_MASK }) {
             boolean fast = mod != 0;
-            bindKey(KeyStroke.getKeyStroke(key, mod, false), "juse-pan-" + dir + "-on-" + fast,
+            bindKey(KeyStroke.getKeyStroke(key, mod, false), "pianura-pan-" + dir + "-on-" + fast,
                 () -> setPanKey(dir, true, fast));
-            bindKey(KeyStroke.getKeyStroke(key, mod, true), "juse-pan-" + dir + "-off-" + fast,
+            bindKey(KeyStroke.getKeyStroke(key, mod, true), "pianura-pan-" + dir + "-off-" + fast,
                 () -> setPanKey(dir, false, fast));
         }
     }

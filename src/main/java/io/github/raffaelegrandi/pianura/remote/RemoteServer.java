@@ -17,18 +17,18 @@ import io.github.raffaelegrandi.pianura.units.ControllerRobot;
 import io.github.raffaelegrandi.pianura.utils.Position;
 
 /**
- * UDP server that lets programs outside JUSE (Python, C, another JVM, ...) drive robots.
+ * UDP server that lets programs outside Pianura (Python, C, another JVM, ...) drive robots.
  *
  * One server, one UDP socket, any number of robots: every message carries the robot id.
  * Messages are JSON objects, one per datagram (see {@code clients/python/README.md}):
  * <pre>
- *   client → JUSE   {"type":"hello","robot":1}
- *   JUSE → client   {"type":"welcome","protocol":2,"robot":1,"mode":"lockstep","period":0.1,...}
- *   JUSE → client   {"type":"sensors","robot":1,"seq":7,"t":0.7,"pose":{...},"ir":[...],"bump":[...],"floor":[...],
+ *   client → Pianura   {"type":"hello","robot":1}
+ *   Pianura → client   {"type":"welcome","protocol":2,"robot":1,"mode":"lockstep","period":0.1,...}
+ *   Pianura → client   {"type":"sensors","robot":1,"seq":7,"t":0.7,"pose":{...},"ir":[...],"bump":[...],"floor":[...],
  *                    ...,"inbox":[{"from":2,"to":"all","t":0.6,"data":{...}}]}
- *   client → JUSE   {"type":"cmd","robot":1,"seq":7,"v":1.0,"w":0.3}      (or "left"/"right" wheel speeds)
+ *   client → Pianura   {"type":"cmd","robot":1,"seq":7,"v":1.0,"w":0.3}      (or "left"/"right" wheel speeds)
  *                   optional radio messages: "broadcast": data, "send": [{"to":3,"data":...}]
- *   client → JUSE   {"type":"bye","robot":1}
+ *   client → Pianura   {"type":"bye","robot":1}
  * </pre>
  * Radio messages go through the simulated network ({@link io.github.raffaelegrandi.pianura.comm.CommNetwork}): range,
  * losses and latency apply as for Java robots. They are sent once, at the control instant of the
@@ -75,7 +75,7 @@ public final class RemoteServer implements AutoCloseable {
         this.socket = socket;
         this.mode = mode;
         this.replyTimeoutMs = replyTimeoutMs;
-        this.receiver = Thread.ofPlatform().name("juse-remote-" + socket.getLocalPort()).daemon(true).start(this::receiveLoop);
+        this.receiver = Thread.ofPlatform().name("pianura-remote-" + socket.getLocalPort()).daemon(true).start(this::receiveLoop);
     }
 
     /** Listens on 127.0.0.1:{@code port} (use 0 for any free port). */
@@ -94,7 +94,7 @@ public final class RemoteServer implements AutoCloseable {
 
     long getReplyTimeoutMs() { return replyTimeoutMs; }
 
-    /** Where connections, timeouts and protocol errors are reported (e.g. the JUSE log). */
+    /** Where connections, timeouts and protocol errors are reported (e.g. the Pianura log). */
     public void setLogger(Consumer<String> logger) { this.logger = logger != null ? logger : m -> {}; }
 
     void log(String msg) { logger.accept(msg); }

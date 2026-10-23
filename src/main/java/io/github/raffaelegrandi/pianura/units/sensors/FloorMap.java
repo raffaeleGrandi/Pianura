@@ -168,7 +168,7 @@ public final class FloorMap {
         if (painter != null || disposed) return;
         synchronized (requests) {
             if (painter != null) return;
-            painter = Thread.ofPlatform().name("juse-floor-tiles").daemon(true).start(() -> {
+            painter = Thread.ofPlatform().name("pianura-floor-tiles").daemon(true).start(() -> {
                 while (true) {
                     Request r;
                     try { r = requests.takeFirst(); } catch (InterruptedException e) { return; }

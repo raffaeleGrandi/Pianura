@@ -4,7 +4,7 @@ plugins {
 }
 
 // Built with any JDK >= 21 (25 LTS recommended); the bytecode and the API used are Java 21,
-// so JUSE runs on every JDK from 21 on.
+// so Pianura runs on every JDK from 21 on.
 tasks.withType<JavaCompile>().configureEach {
     options.release.set(21)
     options.encoding = "UTF-8"

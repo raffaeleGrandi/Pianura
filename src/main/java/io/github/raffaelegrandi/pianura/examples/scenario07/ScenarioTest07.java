@@ -10,7 +10,7 @@ import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
 import io.github.raffaelegrandi.pianura.utils.Position;
 
 /**
- * Two robots driven from outside JUSE over UDP (see clients/python/README.md).
+ * Two robots driven from outside Pianura over UDP (see clients/python/README.md).
  * The robots stand still until a client says hello.
  */
 public class ScenarioTest07 extends ScenarioManager {

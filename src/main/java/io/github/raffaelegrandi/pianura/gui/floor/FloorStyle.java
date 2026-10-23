@@ -50,7 +50,7 @@ public interface FloorStyle {
 
     // ---- fabbriche ----
 
-    /** Scacchiera verde originale di JUSE, con il marchio in basso a destra. */
+    /** Scacchiera verde dell'originale JUSE, con il nome Pianura in basso a destra. */
     static FloorStyle checkerboard() {
         return new CheckerboardFloor(Const.arenaFloorColor1, Const.arenaFloorColor2, 1, true);
     }

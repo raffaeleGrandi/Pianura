@@ -55,9 +55,9 @@ public class CheckerboardFloor implements FloorStyle {
         g.dispose();
     }
 
-    /** "JUSE" nella penultima riga, una lettera per quadrato, nel colore opposto al quadrato. */
+    /** "PIANURA" nella penultima riga, una lettera per quadrato, nel colore opposto al quadrato. */
     private void paintBanner(Graphics2D g, int rows, int cols, double s) {
-        String text = "JUSE";
+        String text = "PIANURA";
         int row = rows - 2, firstCol = cols - 1 - text.length();
         if (row < 0 || firstCol < 0) return;
         g.setFont(new Font("SansSerif", Font.PLAIN, Math.max(8, (int) Math.round(s * 0.8))));

@@ -73,7 +73,7 @@ public class ConnectivityWindow extends JFrame {
 
     public ConnectivityWindow(CommNetwork network, SimClock clock, List<? extends RobotUnit> robots,
                               double arenaWidthPx, double arenaHeightPx) {
-        super("JUSE - Connectivity");
+        super("Pianura - Connectivity");
         this.network = network;
         this.clock = clock;
         this.robots = robots;

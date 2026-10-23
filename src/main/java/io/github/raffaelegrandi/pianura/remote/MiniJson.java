@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Minimal JSON reader/writer for the remote-control protocol, so that JUSE keeps
+ * Minimal JSON reader/writer for the remote-control protocol, so that Pianura keeps
  * having no dependencies beyond the JDK.
  *
  * Reading produces: {@code Map<String,Object>} (objects, insertion order kept),

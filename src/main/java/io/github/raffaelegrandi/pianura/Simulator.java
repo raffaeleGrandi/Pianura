@@ -90,7 +90,7 @@ public class Simulator {
 
 	/**
 	 * Collega un server di controllo remoto: i suoi messaggi (connessioni, client che non
-	 * rispondono, errori di protocollo) finiscono nel log di JUSE, e viene chiuso con stopSim().
+	 * rispondono, errori di protocollo) finiscono nel log di Pianura, e viene chiuso con stopSim().
 	 */
 	public void attach(io.github.raffaelegrandi.pianura.remote.RemoteServer server){
 		remoteServers.add(server);

@@ -110,7 +110,7 @@ public final class SimEngine {
         running = true;
         sense();  // sensori validi già all'istante 0, prima che i robot li leggano
         network.updateGraph(clock.now());
-        thread = Thread.ofPlatform().name("juse-engine").daemon(true).start(this::loop);
+        thread = Thread.ofPlatform().name("pianura-engine").daemon(true).start(this::loop);
     }
 
     /** Ferma motore e robot (i robot in sleepSim ricevono SimulationStoppedException). */

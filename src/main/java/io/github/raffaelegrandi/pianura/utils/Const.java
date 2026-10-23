@@ -23,7 +23,7 @@ public class Const {
 	public static final Dimension arenaDimension = new Dimension(arenaWidth, arenaHeight);
 	public static final Point guiFrameLoc = new Point(50,50);
 	public static final Dimension guiFrameDim = new Dimension(600,720);
-	public static final String guiFrameTitle = "Test - Juse Main Frame";
+	public static final String guiFrameTitle = "Pianura";
 	public static final int repaintTime = 16; // arena refresh time in ms (~60 fps)
 	public static final double auxGPanelScaleFactor = 0.5;
 	public static final Dimension auxGPanelDim = new Dimension((int)(arenaWidth*auxGPanelScaleFactor),(int)(arenaHeight*auxGPanelScaleFactor));
