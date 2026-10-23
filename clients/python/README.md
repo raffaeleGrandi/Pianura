@@ -6,8 +6,8 @@ library only) and an example (`wander.py`).
 
 ## Quick start
 
-1. Run the example scenario `io.github.raffaelegrandi.pianura.examples.scenario07.MainClassTest07`. It opens paused, with two remote
-   robots waiting on UDP port 5555.
+1. Run the example scenario 07 from the project root: `./gradlew run -Pexample=07`. It opens
+   paused, with two remote robots waiting on UDP port 5555.
 2. Start the client: `python3 wander.py 1 2`
 3. Press **Run** (or Space) in JUSE.
 
