@@ -9,8 +9,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ObjectID;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ObjectID;
 import io.github.raffaelegrandi.pianura.units.UnitObject;
 import io.github.raffaelegrandi.pianura.utils.Const;
 import io.github.raffaelegrandi.pianura.utils.Position;
@@ -402,7 +402,7 @@ public class CollisionDetector {
 
     private String describe(int i) {
         ObjectID id = obstacles.get(i).getID();
-        String kind = id.getType() == io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType.OBSTACLE_OVAL ? "oval" : "rectangle";
+        String kind = id.getType() == io.github.raffaelegrandi.pianura.arena.ArenaObjectType.OBSTACLE_OVAL ? "oval" : "rectangle";
         return "Obstacle #" + (i + 1) + " (" + colorName(id.getColor()) + " " + kind + " at " + fmt(id.getPos()) + ")";
     }
 

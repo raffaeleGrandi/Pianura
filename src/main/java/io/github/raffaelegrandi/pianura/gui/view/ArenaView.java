@@ -40,8 +40,8 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ObjectID;
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ObjectID;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.panels.ArenaFloorPanel;
 import io.github.raffaelegrandi.pianura.units.RobotUnit;
 import io.github.raffaelegrandi.pianura.units.UnitObject;

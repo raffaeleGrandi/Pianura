@@ -3,7 +3,7 @@ package io.github.raffaelegrandi.pianura.structures;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.units.RobotDummy;
 import io.github.raffaelegrandi.pianura.utils.Const;

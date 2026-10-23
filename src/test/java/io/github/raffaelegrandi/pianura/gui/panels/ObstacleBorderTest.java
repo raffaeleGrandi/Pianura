@@ -9,9 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectABS;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectABS;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.units.collisions.RectShape;
 import io.github.raffaelegrandi.pianura.utils.Const;

@@ -2,8 +2,8 @@ package testRobots8;
 
 import java.awt.Color;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
 import io.github.raffaelegrandi.pianura.units.ControllerRobot;

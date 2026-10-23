@@ -11,8 +11,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.sim.SimClock;
 import io.github.raffaelegrandi.pianura.sim.SimEngine;
 import io.github.raffaelegrandi.pianura.units.ControllerRobot;

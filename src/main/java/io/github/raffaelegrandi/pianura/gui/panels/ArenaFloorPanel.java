@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectABS;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ObjectID;
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectABS;
+import io.github.raffaelegrandi.pianura.arena.ObjectID;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.units.collisions.OvalShape;
 import io.github.raffaelegrandi.pianura.units.collisions.RectShape;

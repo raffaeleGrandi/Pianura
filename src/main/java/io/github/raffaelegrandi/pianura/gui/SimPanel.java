@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.swing.*;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.gui.panels.ArenaFloorPanel;
 import io.github.raffaelegrandi.pianura.gui.view.ArenaView;

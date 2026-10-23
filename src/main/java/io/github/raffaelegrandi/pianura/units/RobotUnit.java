@@ -1,8 +1,8 @@
 package io.github.raffaelegrandi.pianura.units;
 
 import java.awt.Color;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ObjectID;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.arena.ObjectID;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectType;
 import io.github.raffaelegrandi.pianura.sim.SimClock;
 import io.github.raffaelegrandi.pianura.sim.SimulationStoppedException;
 import io.github.raffaelegrandi.pianura.units.collisions.SensorArray;

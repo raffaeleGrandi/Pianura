@@ -2,8 +2,8 @@ package io.github.raffaelegrandi.pianura.units;
 
 import java.awt.geom.Point2D;
 
-import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectABS;
-import io.github.raffaelegrandi.pianura.ArenaObjects.ObjectID;
+import io.github.raffaelegrandi.pianura.arena.ArenaObjectABS;
+import io.github.raffaelegrandi.pianura.arena.ObjectID;
 import io.github.raffaelegrandi.pianura.units.collisions.*;
 import io.github.raffaelegrandi.pianura.utils.Const;
 import io.github.raffaelegrandi.pianura.utils.Position;

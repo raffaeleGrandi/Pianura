@@ -85,7 +85,7 @@ Key methods available in your robot class:
 Extend `ScenarioManager` and define your robots and obstacles:
 
 ```java
-import io.github.raffaelegrandi.pianura.ArenaObjects.*;
+import io.github.raffaelegrandi.pianura.arena.*;
 import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
 import io.github.raffaelegrandi.pianura.utils.Position;
 import java.awt.*;
@@ -131,7 +131,7 @@ src/
 │   │   ├── structures/         # ScenarioManager, UnitsManager (physics loop)
 │   │   ├── units/              # RobotUnit, RobotDummy, UnitObject
 │   │   │   └── collisions/     # Ray casting: CollidableShape, RectShape, OvalShape
-│   │   ├── ArenaObjects/       # Obstacle, ObjectID, ArenaObjectType
+│   │   ├── arena/              # Obstacle, ObjectID, ArenaObjectType
 │   │   └── utils/              # Const, Position, LogArea
 │   └── testRobots4/            # Example scenario (bundled demo)
 └── test/java/                  # Unit tests (JUnit 5)

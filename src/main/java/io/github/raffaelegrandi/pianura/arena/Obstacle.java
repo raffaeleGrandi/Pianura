@@ -1,4 +1,4 @@
-package io.github.raffaelegrandi.pianura.ArenaObjects;
+package io.github.raffaelegrandi.pianura.arena;
 
 import java.awt.Color;
 import java.awt.Dimension;
