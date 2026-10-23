@@ -1,9 +1,9 @@
 package testRobots4;
 
-import jusePack.units.RobotDummy;
-import jusePack.units.UnitObject;
-import jusePack.utils.Const;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.units.RobotDummy;
+import io.github.raffaelegrandi.pianura.units.UnitObject;
+import io.github.raffaelegrandi.pianura.utils.Const;
+import io.github.raffaelegrandi.pianura.utils.Position;
 
 public class TestDummy04 extends RobotDummy {
 

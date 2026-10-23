@@ -3,10 +3,10 @@ package testRobots3;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import jusePack.ArenaObjects.ArenaObjectType;
-import jusePack.ArenaObjects.Obstacle;
-import jusePack.structures.ScenarioManager;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
+import io.github.raffaelegrandi.pianura.utils.Position;
 
 public class ScenarioTest03 extends ScenarioManager {
 

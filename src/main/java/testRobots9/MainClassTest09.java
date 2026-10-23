@@ -2,7 +2,7 @@ package testRobots9;
 
 import java.awt.Point;
 
-import jusePack.JuseManager;
+import io.github.raffaelegrandi.pianura.JuseManager;
 
 /**
  * Large map (300 x 200 cells, 60 robots): fly over it with W A S D, the mouse at the border of

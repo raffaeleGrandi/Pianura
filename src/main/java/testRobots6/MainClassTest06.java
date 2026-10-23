@@ -2,7 +2,7 @@ package testRobots6;
 
 import java.awt.Point;
 
-import jusePack.JuseManager;
+import io.github.raffaelegrandi.pianura.JuseManager;
 
 public class MainClassTest06 {
 

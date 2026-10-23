@@ -1,7 +1,7 @@
 package testRobots3;
 
 import java.awt.Point;
-import jusePack.*;
+import io.github.raffaelegrandi.pianura.*;
 
 public class MainClassTest03 {
 	

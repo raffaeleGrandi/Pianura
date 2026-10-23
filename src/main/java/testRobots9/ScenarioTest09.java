@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import jusePack.ArenaObjects.ArenaObjectType;
-import jusePack.ArenaObjects.Obstacle;
-import jusePack.gui.floor.FloorStyle;
-import jusePack.structures.ScenarioManager;
-import jusePack.units.ControllerRobot;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
+import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
+import io.github.raffaelegrandi.pianura.units.ControllerRobot;
+import io.github.raffaelegrandi.pianura.utils.Position;
 import testRobots8.BeaconWanderer;
 
 /**

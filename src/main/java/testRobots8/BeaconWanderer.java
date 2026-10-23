@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import jusePack.comm.Message;
-import jusePack.units.RobotController;
-import jusePack.units.RobotUnit;
+import io.github.raffaelegrandi.pianura.comm.Message;
+import io.github.raffaelegrandi.pianura.units.RobotController;
+import io.github.raffaelegrandi.pianura.units.RobotUnit;
 
 /**
  * Example controller: wanders around avoiding obstacles and, once per second, broadcasts a

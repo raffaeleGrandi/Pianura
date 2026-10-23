@@ -44,8 +44,8 @@ This launches the bundled demo scenario (`testRobots4`), which shows a single ro
 Extend `RobotDummy` and implement `executeLoop()`. This method runs in its own virtual thread and contains your entire control logic:
 
 ```java
-import jusePack.units.RobotDummy;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.units.RobotDummy;
+import io.github.raffaelegrandi.pianura.utils.Position;
 
 public class MyRobot extends RobotDummy {
 
@@ -85,9 +85,9 @@ Key methods available in your robot class:
 Extend `ScenarioManager` and define your robots and obstacles:
 
 ```java
-import jusePack.ArenaObjects.*;
-import jusePack.structures.ScenarioManager;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.ArenaObjects.*;
+import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
+import io.github.raffaelegrandi.pianura.utils.Position;
 import java.awt.*;
 
 public class MyScenario extends ScenarioManager {
@@ -125,7 +125,7 @@ public class Main {
 ```
 src/
 ├── main/java/
-│   ├── jusePack/               # Core simulator
+│   ├── io/github/raffaelegrandi/pianura/  # Core simulator
 │   │   ├── JuseManager.java    # Main entry point — wires scenario, GUI, physics
 │   │   ├── gui/                # Swing-based visualization
 │   │   ├── structures/         # ScenarioManager, UnitsManager (physics loop)

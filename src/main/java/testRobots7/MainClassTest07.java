@@ -2,8 +2,8 @@ package testRobots7;
 
 import java.awt.Point;
 
-import jusePack.JuseManager;
-import jusePack.remote.RemoteServer;
+import io.github.raffaelegrandi.pianura.JuseManager;
+import io.github.raffaelegrandi.pianura.remote.RemoteServer;
 
 /**
  * Remote control example: start this, then run the Python client

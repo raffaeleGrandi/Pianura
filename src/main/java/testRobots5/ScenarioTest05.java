@@ -3,11 +3,11 @@ package testRobots5;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import jusePack.ArenaObjects.ArenaObjectType;
-import jusePack.ArenaObjects.Obstacle;
-import jusePack.gui.floor.FloorStyle;
-import jusePack.structures.ScenarioManager;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.ArenaObjects.ArenaObjectType;
+import io.github.raffaelegrandi.pianura.ArenaObjects.Obstacle;
+import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
+import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
+import io.github.raffaelegrandi.pianura.utils.Position;
 import testRobots4.TestDummy04;
 
 /**

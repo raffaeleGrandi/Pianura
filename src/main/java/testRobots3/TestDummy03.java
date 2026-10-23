@@ -1,8 +1,8 @@
 package testRobots3;
 
-import jusePack.units.RobotDummy;
-import jusePack.units.UnitObject;
-import jusePack.utils.Position;
+import io.github.raffaelegrandi.pianura.units.RobotDummy;
+import io.github.raffaelegrandi.pianura.units.UnitObject;
+import io.github.raffaelegrandi.pianura.utils.Position;
 
 
 public class TestDummy03 extends RobotDummy {
