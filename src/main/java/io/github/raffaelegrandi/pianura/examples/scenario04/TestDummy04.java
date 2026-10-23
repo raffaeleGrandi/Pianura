@@ -1,4 +1,4 @@
-package testRobots4;
+package io.github.raffaelegrandi.pianura.examples.scenario04;
 
 import io.github.raffaelegrandi.pianura.units.RobotDummy;
 import io.github.raffaelegrandi.pianura.units.UnitObject;

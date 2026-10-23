@@ -1,4 +1,4 @@
-package testRobots6;
+package io.github.raffaelegrandi.pianura.examples.scenario06;
 
 import java.awt.Point;
 

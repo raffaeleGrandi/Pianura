@@ -35,7 +35,7 @@ cd JUSE
 ./gradlew run
 ```
 
-This launches the bundled demo scenario (`testRobots4`), which shows a single robot navigating an arena with rectangular and oval obstacles using a simple reactive avoidance algorithm.
+This launches the bundled demo scenario (`examples.scenario04`), which shows a single robot navigating an arena with rectangular and oval obstacles using a simple reactive avoidance algorithm.
 
 ---
 
@@ -133,7 +133,7 @@ src/
 │   │   │   └── collisions/     # Ray casting: CollidableShape, RectShape, OvalShape
 │   │   ├── arena/              # Obstacle, ObjectID, ArenaObjectType
 │   │   └── utils/              # Const, Position, LogArea
-│   └── testRobots4/            # Example scenario (bundled demo)
+│   │   └── examples/           # Example scenarios 03–09 (scenario04 is the default demo)
 └── test/java/                  # Unit tests (JUnit 5)
 ```
 

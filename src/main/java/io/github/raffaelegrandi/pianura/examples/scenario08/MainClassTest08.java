@@ -1,4 +1,4 @@
-package testRobots8;
+package io.github.raffaelegrandi.pianura.examples.scenario08;
 
 import java.awt.Point;
 

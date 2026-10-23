@@ -11,7 +11,7 @@ tasks.withType<JavaCompile>().configureEach {
 }
 
 application {
-    mainClass.set("testRobots4.MainClassTest04")
+    mainClass.set("io.github.raffaelegrandi.pianura.examples.scenario04.MainClassTest04")
 }
 
 repositories {

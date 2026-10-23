@@ -1,4 +1,4 @@
-package testRobots5;
+package io.github.raffaelegrandi.pianura.examples.scenario05;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,7 +8,7 @@ import io.github.raffaelegrandi.pianura.arena.Obstacle;
 import io.github.raffaelegrandi.pianura.gui.floor.FloorStyle;
 import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
 import io.github.raffaelegrandi.pianura.utils.Position;
-import testRobots4.TestDummy04;
+import io.github.raffaelegrandi.pianura.examples.scenario04.TestDummy04;
 
 /**
  * Arena grande (80 x 50 celle) con pavimento in pietra, stanze e corridoi:

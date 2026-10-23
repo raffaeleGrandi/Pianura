@@ -19,7 +19,7 @@ import io.github.raffaelegrandi.pianura.units.RobotDummy;
 import io.github.raffaelegrandi.pianura.units.collisions.CollisionDetector;
 import io.github.raffaelegrandi.pianura.utils.Const;
 import io.github.raffaelegrandi.pianura.utils.Position;
-import testRobots4.TestDummy04;
+import io.github.raffaelegrandi.pianura.examples.scenario04.TestDummy04;
 
 /** Test del motore senza GUI. */
 class SimEngineTest {

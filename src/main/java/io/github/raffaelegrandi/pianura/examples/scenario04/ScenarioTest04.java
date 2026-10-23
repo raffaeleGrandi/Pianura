@@ -1,4 +1,4 @@
-package testRobots4;
+package io.github.raffaelegrandi.pianura.examples.scenario04;
 
 import java.awt.Color;
 import java.awt.Dimension;

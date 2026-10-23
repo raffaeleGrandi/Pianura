@@ -1,7 +1,7 @@
 """
 Example: robots that wander around and steer away from obstacles, driven from Python.
 
-    1. run the JUSE example scenario 07 (testRobots7.MainClassTest07): it starts paused
+    1. run the JUSE example scenario 07 (examples.scenario07.MainClassTest07): it starts paused
     2. python3 wander.py 1 2          (one thread per robot id)
     3. press Run (or Space) in JUSE
 
