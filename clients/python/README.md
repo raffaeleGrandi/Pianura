@@ -1,7 +1,7 @@
-# Driving JUSE robots from outside (UDP + JSON)
+# Driving Pianura robots from outside (UDP + JSON)
 
-JUSE robots can be driven by any program that speaks UDP and JSON — Python, C, MATLAB,
-another JVM. This folder contains a ready-made Python client (`juse_client.py`, standard
+Pianura robots can be driven by any program that speaks UDP and JSON — Python, C, MATLAB,
+another JVM. This folder contains a ready-made Python client (`pianura_client.py`, standard
 library only) and an example (`wander.py`).
 
 ## Quick start
@@ -9,16 +9,16 @@ library only) and an example (`wander.py`).
 1. Run the example scenario 07 from the project root: `./gradlew run -Pexample=07`. It opens
    paused, with two remote robots waiting on UDP port 5555.
 2. Start the client: `python3 wander.py 1 2`
-3. Press **Run** (or Space) in JUSE.
+3. Press **Run** (or Space) in Pianura.
 
-## On the JUSE side
+## On the Pianura side
 
 ```java
 RemoteServer server = RemoteServer.start(5555, RemoteServer.Mode.LOCKSTEP);
 addRobot(server.createRobot(1, new Position(5, 5, 0), 2, 0.1));   // id, pose, IR range, control period (s)
 ...
-Simulator sim = new Simulator(new Point(30, 30), "JUSE", scenario);
-sim.attach(server);        // server messages in the JUSE log, closed by Stop
+Simulator sim = new Simulator(new Point(30, 30), "Pianura", scenario);
+sim.attach(server);        // server messages in the Pianura log, closed by Stop
 sim.startSimPaused();
 ```
 
@@ -29,8 +29,8 @@ By default the server listens on `127.0.0.1` only. To accept clients from other 
 
 | Mode | What happens every control period | Use it for |
 |---|---|---|
-| `LOCKSTEP` | JUSE sends the sensors and **waits** for the answer with the same `seq`. The whole simulation waits, so runs are reproducible at any speed. If no answer arrives within the timeout (1 s by default) the robot keeps its last command and a warning is logged. | algorithm development, experiments, debugging |
-| `REALTIME` | JUSE sends the sensors and applies the **latest** command received, without waiting — like a real robot on a radio link. | realistic timing, slow or unreliable clients |
+| `LOCKSTEP` | Pianura sends the sensors and **waits** for the answer with the same `seq`. The whole simulation waits, so runs are reproducible at any speed. If no answer arrives within the timeout (1 s by default) the robot keeps its last command and a warning is logged. | algorithm development, experiments, debugging |
+| `REALTIME` | Pianura sends the sensors and applies the **latest** command received, without waiting — like a real robot on a radio link. | realistic timing, slow or unreliable clients |
 
 A robot whose client has not said `hello` yet stands still, and the simulation is not blocked.
 Connect the client before pressing Run, otherwise it misses the first control periods.
@@ -40,7 +40,7 @@ Connect the client before pressing Run, otherwise it misses the first control pe
 One JSON object per UDP datagram. Lengths are in **cells**, time in **seconds**, angles in
 **radians**. The y axis grows downwards and positive angles turn **clockwise** on screen.
 
-### Client → JUSE
+### Client → Pianura
 
 | Message | Meaning |
 |---|---|
@@ -50,7 +50,7 @@ One JSON object per UDP datagram. Lengths are in **cells**, time in **seconds**,
 | `{"type":"cmd","robot":1,"seq":7,"v":1.0,"broadcast":{...},"send":[{"to":3,"data":"hi"}]}` | Optional radio messages, see [Radio messages](#radio-messages). A `cmd` with messages but no speeds keeps the previous speeds. |
 | `{"type":"bye","robot":1}` | Stop driving robot 1 (it keeps its last command). |
 
-### JUSE → client
+### Pianura → client
 
 | Message | Meaning |
 |---|---|
@@ -76,7 +76,7 @@ One JSON object per UDP datagram. Lengths are in **cells**, time in **seconds**,
 
 ## Radio messages
 
-Remote robots talk to each other, and to robots written in Java, through JUSE's simulated
+Remote robots talk to each other, and to robots written in Java, through Pianura's simulated
 radio network: a message reaches only the robots within the sender's range (and in line of
 sight, if the scenario enables it), with the scenario's losses and latency. There is no
 "list of neighbours": a robot learns who is around from the messages it receives.
@@ -89,15 +89,15 @@ sight, if the scenario enables it), with the scenario's losses and latency. Ther
   be read at the receiver's next control period (at the earliest one physics step later).
 
 The radio range is set in the scenario (`getCommSettings().setRange(cells)`, 6 cells by
-default) or per robot (`robot.setCommRange(cells)`). The **Connectivity window** in JUSE shows
+default) or per robot (`robot.setCommRange(cells)`). The **Connectivity window** in Pianura shows
 who hears whom while the simulation runs.
 
 ## Python client
 
 ```python
-from juse_client import JuseRobot
+from pianura_client import PianuraRobot
 
-with JuseRobot(robot_id=1) as robot:
+with PianuraRobot(robot_id=1) as robot:
     while True:
         s = robot.sensors()          # blocks until the next reading
         robot.drive(1.0, 0.0)        # answer every reading exactly once (drive or wheels)
@@ -116,4 +116,4 @@ Radio messages:
 `wander.py` sends a beacon every second and prints which robots it can hear.
 
 Protocol version 1 clients are refused by version 2 servers (and vice versa): update
-`juse_client.py` together with JUSE.
+`pianura_client.py` together with Pianura.

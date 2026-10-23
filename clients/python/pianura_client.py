@@ -1,11 +1,11 @@
 """
-JUSE remote-control client (Python 3.8+, standard library only).
+Pianura remote-control client (Python 3.8+, standard library only).
 
-Drive a JUSE robot from Python over UDP:
+Drive a Pianura robot from Python over UDP:
 
-    from juse_client import JuseRobot
+    from pianura_client import PianuraRobot
 
-    with JuseRobot(robot_id=1) as robot:          # default: 127.0.0.1:5555
+    with PianuraRobot(robot_id=1) as robot:       # default: 127.0.0.1:5555
         while True:
             s = robot.sensors()                   # blocks until the next control period
             if min(s.ir[i] for i in (0, 1, 17)) < 20:
@@ -16,7 +16,7 @@ Drive a JUSE robot from Python over UDP:
 Every call to sensors() must be followed by exactly one drive() or wheels() call:
 in lockstep mode the simulation waits for that answer before going on.
 
-Radio messages (protocol version 2) go through JUSE's simulated network, with the same range,
+Radio messages (protocol version 2) go through Pianura's simulated network, with the same range,
 losses and latency as Java robots:
 
     for m in s.inbox:                             # received since the previous reading
@@ -39,8 +39,8 @@ from typing import Any, List, Optional
 PROTOCOL_VERSION = 2
 
 
-class JuseError(Exception):
-    """An error message sent back by JUSE (unknown robot, malformed command, ...)."""
+class PianuraError(Exception):
+    """An error message sent back by Pianura (unknown robot, malformed command, ...)."""
 
 
 class RobotStopped(Exception):
@@ -73,7 +73,7 @@ class Sensors:
     raw: dict = field(repr=False, default_factory=dict)
 
 
-class JuseRobot:
+class PianuraRobot:
     """One remote robot. Use one instance (and one socket) per robot."""
 
     def __init__(self, robot_id: int, host: str = "127.0.0.1", port: int = 5555, timeout: float = 30.0):
@@ -95,7 +95,7 @@ class JuseRobot:
             msg = self._receive()
             if msg.get("type") == "welcome":
                 if msg.get("protocol") != PROTOCOL_VERSION:
-                    raise JuseError(f"protocol {msg.get('protocol')} not supported (client speaks {PROTOCOL_VERSION})")
+                    raise PianuraError(f"protocol {msg.get('protocol')} not supported (client speaks {PROTOCOL_VERSION})")
                 self.welcome = msg
                 return msg
 
@@ -173,5 +173,5 @@ class JuseRobot:
         data, _ = self.sock.recvfrom(65535)
         msg = json.loads(data.decode("utf-8"))
         if msg.get("type") == "error":
-            raise JuseError(msg.get("message", "unknown error"))
+            raise PianuraError(msg.get("message", "unknown error"))
         return msg
