@@ -2,7 +2,7 @@ package testRobots9;
 
 import java.awt.Point;
 
-import io.github.raffaelegrandi.pianura.JuseManager;
+import io.github.raffaelegrandi.pianura.Simulator;
 
 /**
  * Large map (300 x 200 cells, 60 robots): fly over it with W A S D, the mouse at the border of
@@ -11,7 +11,7 @@ import io.github.raffaelegrandi.pianura.JuseManager;
 public class MainClassTest09 {
 
 	public static void main(String[] args) {
-		JuseManager sim = new JuseManager(new Point(30, 30), "JUSE - large map", new ScenarioTest09());
+		Simulator sim = new Simulator(new Point(30, 30), "JUSE - large map", new ScenarioTest09());
 		sim.startSimPaused();
 	}
 

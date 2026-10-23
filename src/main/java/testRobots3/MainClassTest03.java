@@ -9,7 +9,7 @@ public class MainClassTest03 {
 	
 	public static void main(String[] args) {		
 		scenario03 = new ScenarioTest03();
-		JuseManager simManager = new JuseManager(new Point(30,30),"logArea",scenario03);
+		Simulator simManager = new Simulator(new Point(30,30),"logArea",scenario03);
 		simManager.startSimPaused();	// parte in pausa: sistemare la scena, poi Run (o Spazio)
 	}//end main
 }//end class

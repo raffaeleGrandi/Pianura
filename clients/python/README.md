@@ -17,7 +17,7 @@ library only) and an example (`wander.py`).
 RemoteServer server = RemoteServer.start(5555, RemoteServer.Mode.LOCKSTEP);
 addRobot(server.createRobot(1, new Position(5, 5, 0), 2, 0.1));   // id, pose, IR range, control period (s)
 ...
-JuseManager sim = new JuseManager(new Point(30, 30), "JUSE", scenario);
+Simulator sim = new Simulator(new Point(30, 30), "JUSE", scenario);
 sim.attach(server);        // server messages in the JUSE log, closed by Stop
 sim.startSimPaused();
 ```

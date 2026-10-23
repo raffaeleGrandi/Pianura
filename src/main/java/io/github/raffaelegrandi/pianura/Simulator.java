@@ -9,7 +9,7 @@ import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
-import io.github.raffaelegrandi.pianura.gui.JuseMF;
+import io.github.raffaelegrandi.pianura.gui.MainFrame;
 import io.github.raffaelegrandi.pianura.sim.SimClock;
 import io.github.raffaelegrandi.pianura.sim.SimEngine;
 import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
@@ -22,21 +22,21 @@ import io.github.raffaelegrandi.pianura.utils.Const;
  * Punto d'ingresso: costruisce motore di simulazione e finestra per uno scenario.
  *
  * <pre>
- *   JuseManager sim = new JuseManager(new Point(30, 30), "log", new MyScenario());
+ *   Simulator sim = new Simulator(new Point(30, 30), "log", new MyScenario());
  *   sim.startSim(2);          // parte dopo 2 s
  *   // oppure: sim.startSimPaused();  e si avvia dalla barra (Run / Spazio)
  * </pre>
  */
-public class JuseManager {
+public class Simulator {
 
 	private final ScenarioManager scenarioMngRef;
 	private final SimClock clock;
 	private final SimEngine engine;
-	private final JuseMF mainFrame;
+	private final MainFrame mainFrame;
 	private boolean started = false;
 	private final List<io.github.raffaelegrandi.pianura.remote.RemoteServer> remoteServers = new ArrayList<>();
 
-	public JuseManager(Point frameLoc, String logInitStr, ScenarioManager scenarioMng){
+	public Simulator(Point frameLoc, String logInitStr, ScenarioManager scenarioMng){
 		scenarioMngRef = scenarioMng;
 
 		clock = new SimClock(Const.physicsStep);
@@ -49,7 +49,7 @@ public class JuseManager {
 		scenarioMngRef.setUnitsManagerSet(true);
 
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		mainFrame = new JuseMF(Const.guiFrameTitle, frameLoc, logInitStr, scenarioMngRef, engine);
+		mainFrame = new MainFrame(Const.guiFrameTitle, frameLoc, logInitStr, scenarioMngRef, engine);
 		mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		engine.setLogger(msg -> printLogMsg(false, msg));
 		if (mainFrame.simPanel.getControlBar() != null) mainFrame.simPanel.getControlBar().setStopAction(this::stopSim);

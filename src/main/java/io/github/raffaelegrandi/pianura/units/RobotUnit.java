@@ -166,7 +166,7 @@ public abstract class RobotUnit implements Runnable{
 		return n;
 	}
 
-	/** Collega il robot all'orologio della simulazione (fatto da JuseManager/SimEngine). */
+	/** Collega il robot all'orologio della simulazione (fatto da Simulator/SimEngine). */
 	public void attachClock(SimClock clock){ this.clock = clock; }
 
 	/** Tempo simulato corrente in secondi (0 se il robot non è in una simulazione). */

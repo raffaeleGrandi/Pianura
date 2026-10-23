@@ -132,7 +132,7 @@ public class SimPanel extends JPanel implements ActionListener{
 		arena.setRobots(dummyVec);
 	}
 
-	/** Da chiamare sull'EDT (JuseManager.printLogMsg se ne occupa). */
+	/** Da chiamare sull'EDT (Simulator.printLogMsg se ne occupa). */
 	public void showMSG(boolean setClear, String msg){
 		if (setClear)logArea.setClear(true);
 		logArea.addMSG(msg);

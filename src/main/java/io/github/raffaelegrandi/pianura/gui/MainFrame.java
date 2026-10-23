@@ -9,11 +9,11 @@ import io.github.raffaelegrandi.pianura.structures.ScenarioManager;
 
 /** Finestra principale: ridimensionabile, la vista dell'arena si adatta. */
 @SuppressWarnings("serial")
-public class JuseMF extends JFrame{
+public class MainFrame extends JFrame{
 
 	public SimPanel simPanel;
 
-	public JuseMF(String frameTitle, Point frameLoc, String logInitStr, ScenarioManager scenario, SimEngine engine){
+	public MainFrame(String frameTitle, Point frameLoc, String logInitStr, ScenarioManager scenario, SimEngine engine){
 		super(frameTitle);
 		getContentPane().setLayout(new BorderLayout());
 		simPanel = new SimPanel(logInitStr, scenario, engine);

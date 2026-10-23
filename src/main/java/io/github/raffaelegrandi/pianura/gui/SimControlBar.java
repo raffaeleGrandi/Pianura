@@ -92,7 +92,7 @@ public class SimControlBar extends JToolBar {
         });
     }
 
-    /** Azione eseguita da Stop (JuseManager la sostituisce con stopSim, che ferma anche i robot e scrive nel log). */
+    /** Azione eseguita da Stop (Simulator la sostituisce con stopSim, che ferma anche i robot e scrive nel log). */
     public void setStopAction(Runnable action) { stopAction = action != null ? action : engine::stop; }
 
     private void confirmStop() {

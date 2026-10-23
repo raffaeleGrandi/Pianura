@@ -112,7 +112,7 @@ Then wire it up in your main class:
 public class Main {
     public static void main(String[] args) {
         MyScenario scenario = new MyScenario();
-        JuseManager sim = new JuseManager(new Point(50, 50), "My Simulation", scenario);
+        Simulator sim = new Simulator(new Point(50, 50), "My Simulation", scenario);
         sim.startSim(2);   // start after 2-second delay
     }
 }
@@ -126,7 +126,7 @@ public class Main {
 src/
 ├── main/java/
 │   ├── io/github/raffaelegrandi/pianura/  # Core simulator
-│   │   ├── JuseManager.java    # Main entry point — wires scenario, GUI, physics
+│   │   ├── Simulator.java    # Main entry point — wires scenario, GUI, physics
 │   │   ├── gui/                # Swing-based visualization
 │   │   ├── structures/         # ScenarioManager, UnitsManager (physics loop)
 │   │   ├── units/              # RobotUnit, RobotDummy, UnitObject
